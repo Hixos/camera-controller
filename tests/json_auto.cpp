@@ -21,6 +21,8 @@
  */
 
 #include "json_auto.h"
+#include <fmt/core.h>
+#include "Events.h"
 #include <cassert>
 
 Test::Test(int a, std::string b, float c) : a(a), b(b), c(c) {}
@@ -30,8 +32,22 @@ int main()
 {
     Test t{1, "ciao", 2.2f};
 
-    json j = t;
+    json j(t);
+    fmt::print("{}\n", j.dump(4));
 
     Test t2 = j.get<Test>();
     assert(t == t2);
+
+     EventConfigSetShutterSpeed ev{1234};
+
+    json j2 = ev.to_json();
+
+    fmt::print("{}\n", j2.dump(4));
+
+    EventPtr ev2 = jsonToEvent(j2);
+
+    auto ev2_c = std::dynamic_pointer_cast<const EventConfigSetShutterSpeed>(ev2);
+
+    assert(ev.shutter_speed == ev2_c->shutter_speed);
+
 }
