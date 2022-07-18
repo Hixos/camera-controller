@@ -16,6 +16,7 @@ src = [
        'src/camera/CameraWrapper.cpp',
        'src/camera/CameraWidget.cpp',
        'src/utils/logger/PrintLogger.cpp',
+       'src/utils/logger/LogSink.cpp',
        'src/utils/logger/TcpLogSink.cpp',
        'src/events/Events.cpp',
        'src/events/EventBase.cpp',

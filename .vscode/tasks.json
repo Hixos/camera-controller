@@ -43,7 +43,8 @@
         {
             "type": "shell",
             "label": "RUN cc3",
-            "command": "sudo ${workspaceFolder}/builddir/debug/cc3",
+            "command": "sudo",
+            "args": ["${workspaceFolder}/builddir/debug/cc3",  "-l",  "192.168.1.101:19996"],
             "group": "test"
         },
         {
@@ -82,7 +83,7 @@
         {
             "type": "shell",
             "label": "RASP RUN cc3",
-            "command": "ssh -t -t luca@192.168.1.113 ~/cc3/cc3",
+            "command": "ssh -t -t luca@192.168.1.113 \"~/cc3/cc3 -l 192.168.1.101:19996\"",
             "group": "test"
         },
         {

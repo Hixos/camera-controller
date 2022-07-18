@@ -67,7 +67,8 @@
         "charconv": "cpp",
         "forward_list": "cpp",
         "unordered_set": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "*.ipp": "cpp"
     },
     "python.formatting.provider": "black"
 }
