@@ -19,6 +19,12 @@ re_event_name_no_vars = re.compile(r"\s*((?P<name>\w+)\s*\n)")
 re_vars = re.compile(r"\s*((?P<type>[\w:]+)[ \t]+(?P<name>\w+))+\s*")
 re_end_vars = re.compile(r"}\s*")
 
+json_case_template = Template(
+    "case $event_name::id:\n"
+    + "    return make_shared<$event_name>(\n"
+    + "           j.get<$event_name>());\n"
+    + "    break;\n"
+)
 
 with open("./events.txt", "r") as event_list:
     state = "parse_topics"
@@ -93,6 +99,7 @@ file_templ_d = {
     "includes": "",
     "event_dec": "",
     "event_def": "",
+    "json_to_event_cases": "",
     "year": dt.year,
     "gen_date": str(dt),
 }
@@ -118,7 +125,7 @@ for i, ev in enumerate(events):
         event_templ_d["var_list"] = ", " + ", ".join(
             [var["name"] for var in ev["vars"]]
         )
-        event_templ_d["def_constructor"] = "\n{}() = default;".format(ev["name"])
+        event_templ_d["def_constructor"] = "\n{}() : Event(id) {{}};".format(ev["name"])
         event_templ_d["no_macro_args"] = ""
     else:
         event_templ_d["members"] = ""
@@ -130,11 +137,15 @@ for i, ev in enumerate(events):
 
     file_templ_d["event_dec"] += event_dec_templ.substitute(**event_templ_d)
     file_templ_d["event_def"] += event_def_templ.substitute(**event_templ_d)
+    file_templ_d["json_to_event_cases"] += json_case_template.substitute(**event_templ_d)
+    
 
 file_templ_d["includes"] = "\n".join(includes)
 file_templ_d["topic_enum"] = ",\n".join(topics)
-file_templ_d["topic_string_map"] = ",\n".join(["{{{t},\"{t}\"}}".format(t=t) for t in topics])
-file_templ_d["topic_id_map"] = ",\n".join(["{{\"{t}\",{t}}}".format(t=t) for t in topics])
+file_templ_d["topic_string_map"] = ",\n".join(
+    ['{{{t},"{t}"}}'.format(t=t) for t in topics]
+)
+file_templ_d["topic_id_map"] = ",\n".join(['{{"{t}",{t}}}'.format(t=t) for t in topics])
 
 with open("./templates/Events.h.template", "r") as file:
     events_h_templ = Template(file.read())

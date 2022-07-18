@@ -10,13 +10,17 @@ string $event_name::name() const
 
 string $event_name::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if(indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
 }
 
+nlohmann::json $event_name::to_json() const
+{ 
+    return nlohmann::json(*this); 
+}
 
 
 

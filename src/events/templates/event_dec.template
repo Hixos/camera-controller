@@ -7,6 +7,8 @@ struct $event_name : public Event
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
     
 $members
 

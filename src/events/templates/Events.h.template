@@ -32,37 +32,10 @@
 #include <cstdint>
 #include <string>
 #include <type_traits>
-#include <nlohmann/json.hpp>
 
 #include "EventBase.h"
 
 $includes
-
-#define JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(Type)          \
-    friend void to_json(nlohmann::json& nlohmann_json_j,         \
-                        const Type& nlohmann_json_t)             \
-    {                                                            \
-        nlohmann_json_j["event_id"] = Type::id;                  \
-    }                                                            \
-    friend void from_json(const nlohmann::json& nlohmann_json_j, \
-                          Type& nlohmann_json_t)                 \
-    {                                                            \
-    }
-
-#define JSON_EVENT_SERIALIZATION_INTRUSIVE(Type, ...)             \
-    friend void to_json(nlohmann::json& nlohmann_json_j,          \
-                        const Type& nlohmann_json_t)              \
-    {                                                             \
-        nlohmann_json_j["event_id"] = Type::id;                   \
-        NLOHMANN_JSON_EXPAND(                                     \
-            NLOHMANN_JSON_PASTE(NLOHMANN_JSON_TO, __VA_ARGS__))   \
-    }                                                             \
-    friend void from_json(const nlohmann::json& nlohmann_json_j,  \
-                          Type& nlohmann_json_t)                  \
-    {                                                             \
-        NLOHMANN_JSON_EXPAND(                                     \
-            NLOHMANN_JSON_PASTE(NLOHMANN_JSON_FROM, __VA_ARGS__)) \
-    }
 
 enum Topics : uint8_t
 {
@@ -71,6 +44,7 @@ $topic_enum
 
 string getTopicName(uint8_t topic);
 uint8_t getTopicID(string topic_str);
+EventPtr jsonToEvent(const nlohmann::json& j);
 
 $event_dec
 

@@ -29,10 +29,37 @@
 
 #include <cassert>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <string>
 
 using std::shared_ptr;
 using std::string;
+
+#define JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(Type)          \
+    friend void to_json(nlohmann::json& nlohmann_json_j,         \
+                        const Type& nlohmann_json_t)             \
+    {                                                            \
+        nlohmann_json_j["event_id"] = nlohmann_json_t.getID();   \
+    }                                                            \
+    friend void from_json(const nlohmann::json& nlohmann_json_j, \
+                          Type& nlohmann_json_t)                 \
+    {                                                            \
+    }
+
+#define JSON_EVENT_SERIALIZATION_INTRUSIVE(Type, ...)             \
+    friend void to_json(nlohmann::json& nlohmann_json_j,          \
+                        const Type& nlohmann_json_t)              \
+    {                                                             \
+        nlohmann_json_j["event_id"] = nlohmann_json_t.getID();    \
+        NLOHMANN_JSON_EXPAND(                                     \
+            NLOHMANN_JSON_PASTE(NLOHMANN_JSON_TO, __VA_ARGS__))   \
+    }                                                             \
+    friend void from_json(const nlohmann::json& nlohmann_json_j,  \
+                          Type& nlohmann_json_t)                  \
+    {                                                             \
+        NLOHMANN_JSON_EXPAND(                                     \
+            NLOHMANN_JSON_PASTE(NLOHMANN_JSON_FROM, __VA_ARGS__)) \
+    }
 
 struct Event
 {
@@ -43,9 +70,11 @@ struct Event
     virtual string name() const = 0;
 
     virtual string to_string(int indent = -1) const = 0;
+    virtual nlohmann::json to_json() const = 0;
 
     void print() const { fmt::print(to_string()); }
 
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(Event);
 protected:
     Event(uint16_t id) : _id(id) {}
 
@@ -65,6 +94,9 @@ struct EventSMEntry : public Event
 
     string name() const override { return "EventSMEntry"; }
     string to_string(int indent = -1) const override { return name(); }
+    nlohmann::json to_json() const override { return nlohmann::json{*this}; }
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventSMEntry);
 };
 
 struct EventSMExit : public Event
@@ -75,6 +107,9 @@ struct EventSMExit : public Event
 
     string name() const override { return "EventSMExit"; }
     string to_string(int indent = -1) const override { return name(); }
+    nlohmann::json to_json() const override { return nlohmann::json{*this}; }
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventSMExit);
 };
 
 struct EventSMEmpty : public Event
@@ -85,6 +120,9 @@ struct EventSMEmpty : public Event
 
     string name() const override { return "EventSMEmpty"; }
     string to_string(int indent = -1) const override { return name(); }
+    nlohmann::json to_json() const override { return nlohmann::json{*this}; }
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventSMEmpty);
 };
 
 struct EventSMInit : public Event
@@ -95,6 +133,9 @@ struct EventSMInit : public Event
 
     string name() const override { return "EventSMInit"; }
     string to_string(int indent = -1) const override { return name(); }
+    nlohmann::json to_json() const override { return nlohmann::json{*this}; }
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventSMInit);
 };
 
 // Ready to use instances

@@ -29,9 +29,12 @@
 // Autogen date:    $gen_date
 
 #include <map>
+#include <memory>
+#include <stdexcept>
 #include "Events.h"
 
 using std::map;
+using std::make_shared;
 
 const map<uint8_t, string> topic_string_map = {
 $topic_string_map
@@ -63,3 +66,15 @@ uint8_t getTopicID(string topic_str)
 }
 
 $event_def
+
+EventPtr jsonToEvent(const nlohmann::json& j)
+{
+    switch (static_cast<uint16_t>(j.at("event_id")))
+    {
+        $json_to_event_cases
+
+        default:
+            throw std::out_of_range{"No event with provided ID"};
+            break;
+    }
+}

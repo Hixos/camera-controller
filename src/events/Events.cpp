@@ -26,12 +26,15 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-18 21:40:22.449686
+// Autogen date:    2022-07-19 01:20:56.724005
 
 #include "Events.h"
 
 #include <map>
+#include <memory>
+#include <stdexcept>
 
+using std::make_shared;
 using std::map;
 
 const map<uint8_t, string> topic_string_map = {
@@ -70,11 +73,16 @@ string EventCameraCmdConnect::name() const { return "EventCameraCmdConnect"; }
 
 string EventCameraCmdConnect::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraCmdConnect::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraCmdDisconnect::EventCameraCmdDisconnect() : Event(id) {}
@@ -86,11 +94,16 @@ string EventCameraCmdDisconnect::name() const
 
 string EventCameraCmdDisconnect::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraCmdDisconnect::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraCmdRecoverError::EventCameraCmdRecoverError() : Event(id) {}
@@ -102,11 +115,16 @@ string EventCameraCmdRecoverError::name() const
 
 string EventCameraCmdRecoverError::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraCmdRecoverError::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraCmdCapture::EventCameraCmdCapture() : Event(id) {}
@@ -115,11 +133,16 @@ string EventCameraCmdCapture::name() const { return "EventCameraCmdCapture"; }
 
 string EventCameraCmdCapture::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraCmdCapture::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraCmdCapture_Internal::EventCameraCmdCapture_Internal() : Event(id) {}
@@ -131,11 +154,16 @@ string EventCameraCmdCapture_Internal::name() const
 
 string EventCameraCmdCapture_Internal::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraCmdCapture_Internal::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraCmdDownload::EventCameraCmdDownload(bool download)
@@ -147,11 +175,16 @@ string EventCameraCmdDownload::name() const { return "EventCameraCmdDownload"; }
 
 string EventCameraCmdDownload::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraCmdDownload::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraCmdDownload_Internal::EventCameraCmdDownload_Internal() : Event(id)
@@ -165,11 +198,16 @@ string EventCameraCmdDownload_Internal::name() const
 
 string EventCameraCmdDownload_Internal::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraCmdDownload_Internal::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraConnected::EventCameraConnected() : Event(id) {}
@@ -178,11 +216,16 @@ string EventCameraConnected::name() const { return "EventCameraConnected"; }
 
 string EventCameraConnected::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraConnected::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraReady::EventCameraReady() : Event(id) {}
@@ -191,11 +234,16 @@ string EventCameraReady::name() const { return "EventCameraReady"; }
 
 string EventCameraReady::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraReady::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraDisconnected::EventCameraDisconnected() : Event(id) {}
@@ -207,11 +255,16 @@ string EventCameraDisconnected::name() const
 
 string EventCameraDisconnected::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraDisconnected::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraConnectionError::EventCameraConnectionError() : Event(id) {}
@@ -223,11 +276,16 @@ string EventCameraConnectionError::name() const
 
 string EventCameraConnectionError::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraConnectionError::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraError::EventCameraError() : Event(id) {}
@@ -236,11 +294,16 @@ string EventCameraError::name() const { return "EventCameraError"; }
 
 string EventCameraError::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraError::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraIgnoreError::EventCameraIgnoreError() : Event(id) {}
@@ -249,11 +312,16 @@ string EventCameraIgnoreError::name() const { return "EventCameraIgnoreError"; }
 
 string EventCameraIgnoreError::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraIgnoreError::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraCmdLowLatency::EventCameraCmdLowLatency(bool low_latency)
@@ -268,11 +336,16 @@ string EventCameraCmdLowLatency::name() const
 
 string EventCameraCmdLowLatency::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraCmdLowLatency::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraCaptureDone::EventCameraCaptureDone(bool downloaded, string file)
@@ -284,11 +357,16 @@ string EventCameraCaptureDone::name() const { return "EventCameraCaptureDone"; }
 
 string EventCameraCaptureDone::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraCaptureDone::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventCameraControllerState::EventCameraControllerState(uint8_t state)
@@ -303,11 +381,16 @@ string EventCameraControllerState::name() const
 
 string EventCameraControllerState::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraControllerState::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigGetShutterSpeed::EventConfigGetShutterSpeed() : Event(id) {}
@@ -319,11 +402,16 @@ string EventConfigGetShutterSpeed::name() const
 
 string EventConfigGetShutterSpeed::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetShutterSpeed::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigSetShutterSpeed::EventConfigSetShutterSpeed(int32_t shutter_speed)
@@ -338,11 +426,16 @@ string EventConfigSetShutterSpeed::name() const
 
 string EventConfigSetShutterSpeed::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigSetShutterSpeed::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigValueShutterSpeed::EventConfigValueShutterSpeed(
@@ -358,11 +451,16 @@ string EventConfigValueShutterSpeed::name() const
 
 string EventConfigValueShutterSpeed::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigValueShutterSpeed::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigGetAperture::EventConfigGetAperture() : Event(id) {}
@@ -371,11 +469,16 @@ string EventConfigGetAperture::name() const { return "EventConfigGetAperture"; }
 
 string EventConfigGetAperture::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetAperture::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigSetAperture::EventConfigSetAperture(int32_t aperture)
@@ -387,11 +490,16 @@ string EventConfigSetAperture::name() const { return "EventConfigSetAperture"; }
 
 string EventConfigSetAperture::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigSetAperture::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigValueAperture::EventConfigValueAperture(int32_t aperture)
@@ -406,11 +514,16 @@ string EventConfigValueAperture::name() const
 
 string EventConfigValueAperture::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigValueAperture::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigGetISO::EventConfigGetISO() : Event(id) {}
@@ -419,11 +532,16 @@ string EventConfigGetISO::name() const { return "EventConfigGetISO"; }
 
 string EventConfigGetISO::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetISO::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigSetISO::EventConfigSetISO(int32_t iso) : Event(id), iso(iso) {}
@@ -432,11 +550,16 @@ string EventConfigSetISO::name() const { return "EventConfigSetISO"; }
 
 string EventConfigSetISO::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigSetISO::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigValueISO::EventConfigValueISO(int32_t iso) : Event(id), iso(iso) {}
@@ -445,11 +568,16 @@ string EventConfigValueISO::name() const { return "EventConfigValueISO"; }
 
 string EventConfigValueISO::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigValueISO::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigGetBattery::EventConfigGetBattery() : Event(id) {}
@@ -458,11 +586,16 @@ string EventConfigGetBattery::name() const { return "EventConfigGetBattery"; }
 
 string EventConfigGetBattery::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetBattery::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigValueBattery::EventConfigValueBattery(int32_t battery)
@@ -477,11 +610,16 @@ string EventConfigValueBattery::name() const
 
 string EventConfigValueBattery::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigValueBattery::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigGetFocalLength::EventConfigGetFocalLength() : Event(id) {}
@@ -493,11 +631,16 @@ string EventConfigGetFocalLength::name() const
 
 string EventConfigGetFocalLength::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetFocalLength::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigValueFocalLength::EventConfigValueFocalLength(int32_t focal_length)
@@ -512,11 +655,16 @@ string EventConfigValueFocalLength::name() const
 
 string EventConfigValueFocalLength::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigValueFocalLength::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigGetFocusMode::EventConfigGetFocusMode() : Event(id) {}
@@ -528,11 +676,16 @@ string EventConfigGetFocusMode::name() const
 
 string EventConfigGetFocusMode::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetFocusMode::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigValueFocusMode::EventConfigValueFocusMode(string focus_mode)
@@ -547,11 +700,16 @@ string EventConfigValueFocusMode::name() const
 
 string EventConfigValueFocusMode::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigValueFocusMode::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigGetLongExpNR::EventConfigGetLongExpNR() : Event(id) {}
@@ -563,11 +721,16 @@ string EventConfigGetLongExpNR::name() const
 
 string EventConfigGetLongExpNR::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetLongExpNR::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigValueLongExpNR::EventConfigValueLongExpNR(bool long_exp_nr)
@@ -582,11 +745,16 @@ string EventConfigValueLongExpNR::name() const
 
 string EventConfigValueLongExpNR::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigValueLongExpNR::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigGetVibRed::EventConfigGetVibRed() : Event(id) {}
@@ -595,11 +763,16 @@ string EventConfigGetVibRed::name() const { return "EventConfigGetVibRed"; }
 
 string EventConfigGetVibRed::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetVibRed::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigValueVibRed::EventConfigValueVibRed(bool vr) : Event(id), vr(vr) {}
@@ -608,11 +781,16 @@ string EventConfigValueVibRed::name() const { return "EventConfigValueVibRed"; }
 
 string EventConfigValueVibRed::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigValueVibRed::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigGetCaptureTarget::EventConfigGetCaptureTarget() : Event(id) {}
@@ -624,11 +802,16 @@ string EventConfigGetCaptureTarget::name() const
 
 string EventConfigGetCaptureTarget::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetCaptureTarget::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigSetCaptureTarget::EventConfigSetCaptureTarget(string target)
@@ -643,11 +826,16 @@ string EventConfigSetCaptureTarget::name() const
 
 string EventConfigSetCaptureTarget::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigSetCaptureTarget::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigValueCaptureTarget::EventConfigValueCaptureTarget(string target)
@@ -662,11 +850,16 @@ string EventConfigValueCaptureTarget::name() const
 
 string EventConfigValueCaptureTarget::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigValueCaptureTarget::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigGetCameraMode::EventConfigGetCameraMode() : Event(id) {}
@@ -678,11 +871,16 @@ string EventConfigGetCameraMode::name() const
 
 string EventConfigGetCameraMode::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetCameraMode::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigValueCameraMode::EventConfigValueCameraMode(string target)
@@ -697,11 +895,16 @@ string EventConfigValueCameraMode::name() const
 
 string EventConfigValueCameraMode::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigValueCameraMode::to_json() const
+{
+    return nlohmann::json(*this);
 }
 
 EventConfigGetCommon::EventConfigGetCommon() : Event(id) {}
@@ -710,9 +913,185 @@ string EventConfigGetCommon::name() const { return "EventConfigGetCommon"; }
 
 string EventConfigGetCommon::to_string(int indent) const
 {
-    nlohmann::json j = *this;
+    nlohmann::json j = to_json();
     if (indent < 0)
         return fmt::format("{} {}", name(), j.dump(indent));
     else
         return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetCommon::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventPtr jsonToEvent(const nlohmann::json& j)
+{
+    switch (static_cast<uint16_t>(j.at("event_id")))
+    {
+        case EventCameraCmdConnect::id:
+            return make_shared<EventCameraCmdConnect>(
+                j.get<EventCameraCmdConnect>());
+            break;
+        case EventCameraCmdDisconnect::id:
+            return make_shared<EventCameraCmdDisconnect>(
+                j.get<EventCameraCmdDisconnect>());
+            break;
+        case EventCameraCmdRecoverError::id:
+            return make_shared<EventCameraCmdRecoverError>(
+                j.get<EventCameraCmdRecoverError>());
+            break;
+        case EventCameraCmdCapture::id:
+            return make_shared<EventCameraCmdCapture>(
+                j.get<EventCameraCmdCapture>());
+            break;
+        case EventCameraCmdCapture_Internal::id:
+            return make_shared<EventCameraCmdCapture_Internal>(
+                j.get<EventCameraCmdCapture_Internal>());
+            break;
+        case EventCameraCmdDownload::id:
+            return make_shared<EventCameraCmdDownload>(
+                j.get<EventCameraCmdDownload>());
+            break;
+        case EventCameraCmdDownload_Internal::id:
+            return make_shared<EventCameraCmdDownload_Internal>(
+                j.get<EventCameraCmdDownload_Internal>());
+            break;
+        case EventCameraConnected::id:
+            return make_shared<EventCameraConnected>(
+                j.get<EventCameraConnected>());
+            break;
+        case EventCameraReady::id:
+            return make_shared<EventCameraReady>(j.get<EventCameraReady>());
+            break;
+        case EventCameraDisconnected::id:
+            return make_shared<EventCameraDisconnected>(
+                j.get<EventCameraDisconnected>());
+            break;
+        case EventCameraConnectionError::id:
+            return make_shared<EventCameraConnectionError>(
+                j.get<EventCameraConnectionError>());
+            break;
+        case EventCameraError::id:
+            return make_shared<EventCameraError>(j.get<EventCameraError>());
+            break;
+        case EventCameraIgnoreError::id:
+            return make_shared<EventCameraIgnoreError>(
+                j.get<EventCameraIgnoreError>());
+            break;
+        case EventCameraCmdLowLatency::id:
+            return make_shared<EventCameraCmdLowLatency>(
+                j.get<EventCameraCmdLowLatency>());
+            break;
+        case EventCameraCaptureDone::id:
+            return make_shared<EventCameraCaptureDone>(
+                j.get<EventCameraCaptureDone>());
+            break;
+        case EventCameraControllerState::id:
+            return make_shared<EventCameraControllerState>(
+                j.get<EventCameraControllerState>());
+            break;
+        case EventConfigGetShutterSpeed::id:
+            return make_shared<EventConfigGetShutterSpeed>(
+                j.get<EventConfigGetShutterSpeed>());
+            break;
+        case EventConfigSetShutterSpeed::id:
+            return make_shared<EventConfigSetShutterSpeed>(
+                j.get<EventConfigSetShutterSpeed>());
+            break;
+        case EventConfigValueShutterSpeed::id:
+            return make_shared<EventConfigValueShutterSpeed>(
+                j.get<EventConfigValueShutterSpeed>());
+            break;
+        case EventConfigGetAperture::id:
+            return make_shared<EventConfigGetAperture>(
+                j.get<EventConfigGetAperture>());
+            break;
+        case EventConfigSetAperture::id:
+            return make_shared<EventConfigSetAperture>(
+                j.get<EventConfigSetAperture>());
+            break;
+        case EventConfigValueAperture::id:
+            return make_shared<EventConfigValueAperture>(
+                j.get<EventConfigValueAperture>());
+            break;
+        case EventConfigGetISO::id:
+            return make_shared<EventConfigGetISO>(j.get<EventConfigGetISO>());
+            break;
+        case EventConfigSetISO::id:
+            return make_shared<EventConfigSetISO>(j.get<EventConfigSetISO>());
+            break;
+        case EventConfigValueISO::id:
+            return make_shared<EventConfigValueISO>(
+                j.get<EventConfigValueISO>());
+            break;
+        case EventConfigGetBattery::id:
+            return make_shared<EventConfigGetBattery>(
+                j.get<EventConfigGetBattery>());
+            break;
+        case EventConfigValueBattery::id:
+            return make_shared<EventConfigValueBattery>(
+                j.get<EventConfigValueBattery>());
+            break;
+        case EventConfigGetFocalLength::id:
+            return make_shared<EventConfigGetFocalLength>(
+                j.get<EventConfigGetFocalLength>());
+            break;
+        case EventConfigValueFocalLength::id:
+            return make_shared<EventConfigValueFocalLength>(
+                j.get<EventConfigValueFocalLength>());
+            break;
+        case EventConfigGetFocusMode::id:
+            return make_shared<EventConfigGetFocusMode>(
+                j.get<EventConfigGetFocusMode>());
+            break;
+        case EventConfigValueFocusMode::id:
+            return make_shared<EventConfigValueFocusMode>(
+                j.get<EventConfigValueFocusMode>());
+            break;
+        case EventConfigGetLongExpNR::id:
+            return make_shared<EventConfigGetLongExpNR>(
+                j.get<EventConfigGetLongExpNR>());
+            break;
+        case EventConfigValueLongExpNR::id:
+            return make_shared<EventConfigValueLongExpNR>(
+                j.get<EventConfigValueLongExpNR>());
+            break;
+        case EventConfigGetVibRed::id:
+            return make_shared<EventConfigGetVibRed>(
+                j.get<EventConfigGetVibRed>());
+            break;
+        case EventConfigValueVibRed::id:
+            return make_shared<EventConfigValueVibRed>(
+                j.get<EventConfigValueVibRed>());
+            break;
+        case EventConfigGetCaptureTarget::id:
+            return make_shared<EventConfigGetCaptureTarget>(
+                j.get<EventConfigGetCaptureTarget>());
+            break;
+        case EventConfigSetCaptureTarget::id:
+            return make_shared<EventConfigSetCaptureTarget>(
+                j.get<EventConfigSetCaptureTarget>());
+            break;
+        case EventConfigValueCaptureTarget::id:
+            return make_shared<EventConfigValueCaptureTarget>(
+                j.get<EventConfigValueCaptureTarget>());
+            break;
+        case EventConfigGetCameraMode::id:
+            return make_shared<EventConfigGetCameraMode>(
+                j.get<EventConfigGetCameraMode>());
+            break;
+        case EventConfigValueCameraMode::id:
+            return make_shared<EventConfigValueCameraMode>(
+                j.get<EventConfigValueCameraMode>());
+            break;
+        case EventConfigGetCommon::id:
+            return make_shared<EventConfigGetCommon>(
+                j.get<EventConfigGetCommon>());
+            break;
+
+        default:
+            throw std::out_of_range{"No event with provided ID"};
+            break;
+    }
 }

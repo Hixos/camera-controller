@@ -26,41 +26,14 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-18 21:40:22.449686
+// Autogen date:    2022-07-19 01:20:56.724005
 
 #include <cassert>
 #include <cstdint>
-#include <nlohmann/json.hpp>
 #include <string>
 #include <type_traits>
 
 #include "EventBase.h"
-
-#define JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(Type)          \
-    friend void to_json(nlohmann::json& nlohmann_json_j,         \
-                        const Type& nlohmann_json_t)             \
-    {                                                            \
-        nlohmann_json_j["event_id"] = Type::id;                  \
-    }                                                            \
-    friend void from_json(const nlohmann::json& nlohmann_json_j, \
-                          Type& nlohmann_json_t)                 \
-    {                                                            \
-    }
-
-#define JSON_EVENT_SERIALIZATION_INTRUSIVE(Type, ...)             \
-    friend void to_json(nlohmann::json& nlohmann_json_j,          \
-                        const Type& nlohmann_json_t)              \
-    {                                                             \
-        nlohmann_json_j["event_id"] = Type::id;                   \
-        NLOHMANN_JSON_EXPAND(                                     \
-            NLOHMANN_JSON_PASTE(NLOHMANN_JSON_TO, __VA_ARGS__))   \
-    }                                                             \
-    friend void from_json(const nlohmann::json& nlohmann_json_j,  \
-                          Type& nlohmann_json_t)                  \
-    {                                                             \
-        NLOHMANN_JSON_EXPAND(                                     \
-            NLOHMANN_JSON_PASTE(NLOHMANN_JSON_FROM, __VA_ARGS__)) \
-    }
 
 enum Topics : uint8_t
 {
@@ -71,6 +44,7 @@ enum Topics : uint8_t
 
 string getTopicName(uint8_t topic);
 uint8_t getTopicID(string topic_str);
+EventPtr jsonToEvent(const nlohmann::json& j);
 
 struct EventCameraCmdConnect : public Event
 {
@@ -81,6 +55,8 @@ struct EventCameraCmdConnect : public Event
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventCameraCmdConnect);
 };
@@ -95,6 +71,8 @@ struct EventCameraCmdDisconnect : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventCameraCmdDisconnect);
 };
 
@@ -107,6 +85,8 @@ struct EventCameraCmdRecoverError : public Event
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventCameraCmdRecoverError);
 };
@@ -121,6 +101,8 @@ struct EventCameraCmdCapture : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventCameraCmdCapture);
 };
 
@@ -134,6 +116,8 @@ struct EventCameraCmdCapture_Internal : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventCameraCmdCapture_Internal);
 };
 
@@ -141,12 +125,14 @@ struct EventCameraCmdDownload : public Event
 {
     static constexpr uint16_t id = 15;
 
-    EventCameraCmdDownload() = default;
+    EventCameraCmdDownload() : Event(id){};
     EventCameraCmdDownload(bool download);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     bool download;
 
@@ -163,6 +149,8 @@ struct EventCameraCmdDownload_Internal : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventCameraCmdDownload_Internal);
 };
 
@@ -175,6 +163,8 @@ struct EventCameraConnected : public Event
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventCameraConnected);
 };
@@ -189,6 +179,8 @@ struct EventCameraReady : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventCameraReady);
 };
 
@@ -201,6 +193,8 @@ struct EventCameraDisconnected : public Event
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventCameraDisconnected);
 };
@@ -215,6 +209,8 @@ struct EventCameraConnectionError : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventCameraConnectionError);
 };
 
@@ -227,6 +223,8 @@ struct EventCameraError : public Event
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventCameraError);
 };
@@ -241,6 +239,8 @@ struct EventCameraIgnoreError : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventCameraIgnoreError);
 };
 
@@ -248,12 +248,14 @@ struct EventCameraCmdLowLatency : public Event
 {
     static constexpr uint16_t id = 23;
 
-    EventCameraCmdLowLatency() = default;
+    EventCameraCmdLowLatency() : Event(id){};
     EventCameraCmdLowLatency(bool low_latency);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     bool low_latency;
 
@@ -264,12 +266,14 @@ struct EventCameraCaptureDone : public Event
 {
     static constexpr uint16_t id = 24;
 
-    EventCameraCaptureDone() = default;
+    EventCameraCaptureDone() : Event(id){};
     EventCameraCaptureDone(bool downloaded, string file);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     bool downloaded;
     string file;
@@ -282,12 +286,14 @@ struct EventCameraControllerState : public Event
 {
     static constexpr uint16_t id = 25;
 
-    EventCameraControllerState() = default;
+    EventCameraControllerState() : Event(id){};
     EventCameraControllerState(uint8_t state);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     uint8_t state;
 
@@ -304,6 +310,8 @@ struct EventConfigGetShutterSpeed : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetShutterSpeed);
 };
 
@@ -311,12 +319,14 @@ struct EventConfigSetShutterSpeed : public Event
 {
     static constexpr uint16_t id = 27;
 
-    EventConfigSetShutterSpeed() = default;
+    EventConfigSetShutterSpeed() : Event(id){};
     EventConfigSetShutterSpeed(int32_t shutter_speed);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     int32_t shutter_speed;
 
@@ -328,12 +338,14 @@ struct EventConfigValueShutterSpeed : public Event
 {
     static constexpr uint16_t id = 28;
 
-    EventConfigValueShutterSpeed() = default;
+    EventConfigValueShutterSpeed() : Event(id){};
     EventConfigValueShutterSpeed(int32_t shutter_speed, bool bulb);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     int32_t shutter_speed;
     bool bulb;
@@ -352,6 +364,8 @@ struct EventConfigGetAperture : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetAperture);
 };
 
@@ -359,12 +373,14 @@ struct EventConfigSetAperture : public Event
 {
     static constexpr uint16_t id = 30;
 
-    EventConfigSetAperture() = default;
+    EventConfigSetAperture() : Event(id){};
     EventConfigSetAperture(int32_t aperture);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     int32_t aperture;
 
@@ -375,12 +391,14 @@ struct EventConfigValueAperture : public Event
 {
     static constexpr uint16_t id = 31;
 
-    EventConfigValueAperture() = default;
+    EventConfigValueAperture() : Event(id){};
     EventConfigValueAperture(int32_t aperture);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     int32_t aperture;
 
@@ -397,6 +415,8 @@ struct EventConfigGetISO : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetISO);
 };
 
@@ -404,12 +424,14 @@ struct EventConfigSetISO : public Event
 {
     static constexpr uint16_t id = 33;
 
-    EventConfigSetISO() = default;
+    EventConfigSetISO() : Event(id){};
     EventConfigSetISO(int32_t iso);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     int32_t iso;
 
@@ -420,12 +442,14 @@ struct EventConfigValueISO : public Event
 {
     static constexpr uint16_t id = 34;
 
-    EventConfigValueISO() = default;
+    EventConfigValueISO() : Event(id){};
     EventConfigValueISO(int32_t iso);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     int32_t iso;
 
@@ -442,6 +466,8 @@ struct EventConfigGetBattery : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetBattery);
 };
 
@@ -449,12 +475,14 @@ struct EventConfigValueBattery : public Event
 {
     static constexpr uint16_t id = 36;
 
-    EventConfigValueBattery() = default;
+    EventConfigValueBattery() : Event(id){};
     EventConfigValueBattery(int32_t battery);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     int32_t battery;
 
@@ -471,6 +499,8 @@ struct EventConfigGetFocalLength : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetFocalLength);
 };
 
@@ -478,12 +508,14 @@ struct EventConfigValueFocalLength : public Event
 {
     static constexpr uint16_t id = 38;
 
-    EventConfigValueFocalLength() = default;
+    EventConfigValueFocalLength() : Event(id){};
     EventConfigValueFocalLength(int32_t focal_length);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     int32_t focal_length;
 
@@ -501,6 +533,8 @@ struct EventConfigGetFocusMode : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetFocusMode);
 };
 
@@ -508,12 +542,14 @@ struct EventConfigValueFocusMode : public Event
 {
     static constexpr uint16_t id = 40;
 
-    EventConfigValueFocusMode() = default;
+    EventConfigValueFocusMode() : Event(id){};
     EventConfigValueFocusMode(string focus_mode);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     string focus_mode;
 
@@ -530,6 +566,8 @@ struct EventConfigGetLongExpNR : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetLongExpNR);
 };
 
@@ -537,12 +575,14 @@ struct EventConfigValueLongExpNR : public Event
 {
     static constexpr uint16_t id = 42;
 
-    EventConfigValueLongExpNR() = default;
+    EventConfigValueLongExpNR() : Event(id){};
     EventConfigValueLongExpNR(bool long_exp_nr);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     bool long_exp_nr;
 
@@ -559,6 +599,8 @@ struct EventConfigGetVibRed : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetVibRed);
 };
 
@@ -566,12 +608,14 @@ struct EventConfigValueVibRed : public Event
 {
     static constexpr uint16_t id = 44;
 
-    EventConfigValueVibRed() = default;
+    EventConfigValueVibRed() : Event(id){};
     EventConfigValueVibRed(bool vr);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     bool vr;
 
@@ -588,6 +632,8 @@ struct EventConfigGetCaptureTarget : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetCaptureTarget);
 };
 
@@ -595,12 +641,14 @@ struct EventConfigSetCaptureTarget : public Event
 {
     static constexpr uint16_t id = 46;
 
-    EventConfigSetCaptureTarget() = default;
+    EventConfigSetCaptureTarget() : Event(id){};
     EventConfigSetCaptureTarget(string target);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     string target;
 
@@ -611,12 +659,14 @@ struct EventConfigValueCaptureTarget : public Event
 {
     static constexpr uint16_t id = 47;
 
-    EventConfigValueCaptureTarget() = default;
+    EventConfigValueCaptureTarget() : Event(id){};
     EventConfigValueCaptureTarget(string target);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     string target;
 
@@ -633,6 +683,8 @@ struct EventConfigGetCameraMode : public Event
 
     string to_string(int indent = -1) const override;
 
+    nlohmann::json to_json() const override;
+
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetCameraMode);
 };
 
@@ -640,12 +692,14 @@ struct EventConfigValueCameraMode : public Event
 {
     static constexpr uint16_t id = 49;
 
-    EventConfigValueCameraMode() = default;
+    EventConfigValueCameraMode() : Event(id){};
     EventConfigValueCameraMode(string target);
 
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     string target;
 
@@ -661,6 +715,8 @@ struct EventConfigGetCommon : public Event
     string name() const override;
 
     string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
 
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetCommon);
 };
