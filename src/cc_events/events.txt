@@ -1,0 +1,117 @@
+TOPIC_CAMERA_CONFIG
+TOPIC_CAMERA_CMD
+TOPIC_CAMERA_EVENT
+
+#include "camera/CameraWrapper.h"
+#include "fsm/CameraData.h"
+
+EventCameraCmdConnect
+EventCameraCmdDisconnect
+EventCameraCmdRecoverError
+EventCameraCmdCapture
+EventCameraCmdCapture_Internal
+EventCameraCmdDownload
+{
+    bool download
+}
+EventCameraCmdDownload_Internal
+
+EventCameraConnected
+EventCameraDisconnected
+EventCameraConnectionError
+EventCameraError
+EventCameraIgnoreError
+
+
+
+
+EventCameraCaptureDone
+{
+    bool downloaded
+    string file
+}
+
+EventCameraControllerState
+{
+    uint8_t state
+}
+
+EventConfigSetShutterSpeed
+{
+    int32_t shutter_speed
+}
+
+EventConfigSetAperture
+{
+    int32_t aperture
+}
+
+EventConfigSetISO
+{
+    int32_t iso
+}
+
+EventConfigSetCaptureTarget
+{
+    string target
+}
+
+EventConfigGetShutterSpeed
+EventConfigValueShutterSpeed
+{
+    gphotow::RadioMenuConfig shutter_speed
+}
+
+EventConfigGetAperture
+EventConfigValueAperture
+{
+    gphotow::RadioMenuConfig aperture
+}
+
+EventConfigGetISO
+EventConfigValueISO
+{
+    gphotow::RadioMenuConfig iso
+}
+
+EventConfigGetBattery
+EventConfigValueBattery
+{
+    int32_t battery
+}
+
+EventConfigGetFocalLength
+EventConfigValueFocalLength
+{
+    int32_t focal_length
+}
+
+EventConfigGetFocusMode
+EventConfigValueFocusMode
+{
+    gphotow::RadioMenuConfig focues_mode 
+}
+
+EventConfigGetLongExpNR
+EventConfigValueLongExpNR
+{
+    bool long_exp_nr
+}
+
+EventConfigGetVibRed
+EventConfigValueVibRed
+{
+    gphotow::RadioMenuConfig vr
+}
+
+EventConfigGetCommon
+EventConfigValueCommon
+{
+    CameraCommonConfig common_config
+}
+
+EventConfigGetCaptureTarget
+EventConfigValueCaptureTarget
+{
+    string target
+}

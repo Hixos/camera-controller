@@ -1,0 +1,34 @@
+{
+    "configurations": [
+        {
+            "name": "x86",
+            "includePath": [
+                "/usr/include/",
+                "${workspaceFolder}/src/",
+                "${workspaceFolder}/src/utils/logger/",
+                "${workspaceFolder}/src/events/",
+                "${workspaceFolder}/lib/json/single_include/"
+            ],
+            "defines": [],
+            "cStandard": "c11",
+            "cppStandard": "c++20",
+            "browse": {
+                "path": [],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        },
+        {
+            "name": "ARM",
+            "includePath": [
+                "${workspaceFolder}/src/",
+                "${workspaceFolder}/libs",
+                "/home/luca/raspberry/xcompile/usr/include",
+                "${workspaceFolder}/src/utils/logger"
+            ],
+            "defines": [],
+            "cStandard": "c11",
+            "cppStandard": "c++20"
+        }
+    ],
+    "version": 4
+}

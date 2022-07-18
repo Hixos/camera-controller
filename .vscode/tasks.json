@@ -1,0 +1,109 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "BUILD",
+            "command": "meson compile",
+            "options": {
+                "cwd": "${workspaceFolder}/builddir/debug"
+            },
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/builddir/debug"
+                ]
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "BUILD CROSS",
+            "command": "meson compile",
+            "options": {
+                "cwd": "${workspaceFolder}/builddir/arm"
+            },
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/builddir/arm"
+                ]
+            },
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "RUN cc3",
+            "command": "sudo ${workspaceFolder}/builddir/debug/cc3",
+            "group": "test"
+        },
+        {
+            "type": "shell",
+            "label": "RUN current test",
+            "command": "${workspaceFolder}/builddir/debug/test_${fileBasenameNoExtension}",
+            "group": "test"
+        },
+        {
+            "type": "shell",
+            "label": "SUDO current test",
+            "command": "sudo ${workspaceFolder}/builddir/debug/test_${fileBasenameNoExtension}",
+            "group": "test"
+        },
+        {
+            "type": "shell",
+            "label": "GEN events",
+            "command": "${workspaceFolder}/src/cc_events/event_gen.py",
+            "options": {
+                "cwd": "${workspaceFolder}/src/cc_events/",
+            },
+            "group": "test"
+        },
+        {
+            "type": "shell",
+            "label": "RASP COPY cc3",
+            "command": "scp ${workspaceFolder}/builddir/arm/cc3 luca@192.168.1.113:/home/luca/cc3/cc3",
+            "group": "test"
+        },
+        {
+            "type": "shell",
+            "label": "RASP COPY current test",
+            "command": "scp ${workspaceFolder}/builddir/arm/test_${fileBasenameNoExtension} luca@192.168.1.113:/home/luca/cc3/tests/test_${fileBasenameNoExtension}",
+            "group": "test"
+        },
+        {
+            "type": "shell",
+            "label": "RASP RUN cc3",
+            "command": "ssh -t -t luca@192.168.1.113 ~/cc3/cc3",
+            "group": "test"
+        },
+        {
+            "type": "shell",
+            "label": "RASP RUN current test",
+            "command": "ssh -t -t luca@192.168.1.113 ~/cc3/tests/test_${fileBasenameNoExtension}",
+            "group": "test"
+        },
+        {
+            "type": "shell",
+            "label": "RASP COPY RUN cc3",
+            "group": "test",
+            "dependsOrder": "sequence",
+            "dependsOn":["RASP COPY cc3", "RASP RUN cc3"]
+        },
+        {
+            "type": "shell",
+            "label": "RASP COPY RUN current test",
+            "group": "test",
+            "dependsOrder": "sequence",
+            "dependsOn":["RASP COPY current test", "RASP RUN current test"]
+        },
+    ]
+}
