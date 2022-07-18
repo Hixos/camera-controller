@@ -74,7 +74,7 @@ protected:
     mutex mutex_file;
 
 private:
-    std::string format = "{:%H:%M:%S} {lvl:^8} {name:^20} > {msg}\n";
+    std::string format = "{:%H:%M:%S} {lvl:^8} {name:>15} > {msg}\n";
 };
 
 /**
