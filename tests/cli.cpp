@@ -77,17 +77,32 @@ int main()
 
 void getConfig()
 {
-    // clang-format off
+    //clang-format off
     static map<string, function<string()>> getters{
-        {"shutter_speed", [&]{return camera.getShutterSpeed().name;}},
-        {"aperture", [&]{return camera.getAperture().name;}},
-        {"iso", [&]{return camera.getISO().name;}},
+        {"shutter_speed",
+         [&] {
+             float ss = camera.getShutterSpeed().shutter_speed / 1000000.0f;
+             if (ss >= 1)
+             {
+                 return fmt::format("{:.1f} s", ss);
+             }
+             else
+             {
+                 return fmt::format("1/{:.0f} s", 1 / ss);
+             }
+         }},
+        {"aperture",
+         [&] {
+             return fmt::format("f-{:.2f}", camera.getAperture() / 100.0f);
+         }},
+        {"iso", [&] { return fmt::format("{}", camera.getISO()); }},
         {"info", bind(&CameraWrapper::getCameraInfo, &camera)},
-        {"battery", [&]{return fmt::format("{}%",camera.getBatteryPercent());}},
-        {"focal_length", [&]{return fmt::format("{} mm",camera.getFocalLength());}},
+        {"battery",
+         [&] { return fmt::format("{}%", camera.getBatteryPercent()); }},
+        {"focal_length",
+         [&] { return fmt::format("{} mm", camera.getFocalLength()); }},
         {"exp_program", bind(&CameraWrapper::getExposureProgram, &camera)},
-        {"long_exp_nr", bind(&CameraWrapper::getLongExpNR, &camera)}
-    };
+        {"long_exp_nr", bind(&CameraWrapper::getLongExpNR, &camera)}};
     // clang-format on
     string config;
     auto res = scn::input("{}", config);

@@ -27,7 +27,7 @@
 #include <string>
 
 #include "camera/CameraWrapper.h"
-#include "cc_events/Events.h"
+#include "Events.h"
 #include "events/EventBroker.h"
 
 using scn::scan;
@@ -89,6 +89,16 @@ private:
 const map<string, function<bool(string)>> CameraCLI::actions{
     {"get", &CameraCLI::getConfig},
     {"set", &CameraCLI::setConfig},
+    {"low_latency",
+     [](string cmd) {
+         if (auto res = scan_value<bool>(cmd))
+         {
+             sBroker.post(EventCameraCmdLowLatency{res.value()},
+                          TOPIC_CAMERA_CMD);
+             return true;
+         }
+         return false;
+     }},
     {"capture",
      [](string cmd) {
          sBroker.post(EventCameraCmdCapture{}, TOPIC_CAMERA_CMD);

@@ -1,0 +1,22 @@
+$event_name::$event_name($c_params) : Event(id) $c_params_init
+{
+
+}
+
+string $event_name::name() const
+{
+    return "$event_name";
+}
+
+string $event_name::to_string(int indent) const
+{
+    nlohmann::json j = *this;
+    if(indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+
+
+

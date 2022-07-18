@@ -20,45 +20,29 @@
  * THE SOFTWARE.
  */
 
-#include <thread>
-#include <chrono>
-#include <memory>
+#pragma once
 
-#include "EventBroker.h"
-#include "utils/logger/PrintLogger.h"
-#include "fsm/CameraController.h"
-#include "utils/EventSniffer.h"
-#include "utils/debug/cli.h"
+#include <nlohmann/json.hpp>
+#include <string>
 
-#include "TcpLogSink.h"
-
-using std::this_thread::sleep_for;
-using std::chrono::milliseconds;
-using std::chrono::seconds;
-using std::shared_ptr;
-using std::make_shared;
-
-void printEvent(const EventPtr& ev, uint8_t topic)
+struct Test
 {
-    PrintLogger log = Logging::getLogger("event");
-    LOG_EVENT(log, "Event {}:{} = {}", ev->name(), getTopicName(topic),  ev->to_string());
-}
-
-int main()
-{
-    CLI cli{};
-    cli.start();
-
-    PrintLogger log = Logging::getLogger("main");
-    Logging::addLogSink(make_shared<TcpLogSink>("192.168.1.101", 19996));
-    sBroker.start();
-
-    EventSniffer sniffer{sEventBroker, &printEvent};
+    int a = 0;
+    std::string b;
+    float c;
     
-    CameraController camera;
-    camera.start();
+    Test() = default;
+    Test(int a, std::string b, float c);
 
-    for(;;)
-        sleep_for(seconds(10));
-    return 0;
-}   
+    bool operator==(const Test& o)
+    {
+        return a == o.a && b == o.b && c == o.c;
+    }
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Test, a, b, c);
+};
+
+// bool operator==(const Test& t1, const Test& t2)
+// {
+//     return a == o.a && b == o.b && c == 0.c;
+// }

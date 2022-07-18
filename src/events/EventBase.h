@@ -42,7 +42,7 @@ struct Event
 
     virtual string name() const = 0;
 
-    virtual string to_string() const = 0;
+    virtual string to_string(int indent = -1) const = 0;
 
     void print() const { fmt::print(to_string()); }
 
@@ -64,7 +64,7 @@ struct EventSMEntry : public Event
     EventSMEntry() : Event(id) {}
 
     string name() const override { return "EventSMEntry"; }
-    string to_string() const override { return name(); }
+    string to_string(int indent = -1) const override { return name(); }
 };
 
 struct EventSMExit : public Event
@@ -74,7 +74,7 @@ struct EventSMExit : public Event
     EventSMExit() : Event(id) {}
 
     string name() const override { return "EventSMExit"; }
-    string to_string() const override { return name(); }
+    string to_string(int indent = -1) const override { return name(); }
 };
 
 struct EventSMEmpty : public Event
@@ -84,7 +84,7 @@ struct EventSMEmpty : public Event
     EventSMEmpty() : Event(id) {}
 
     string name() const override { return "EventSMEmpty"; }
-    string to_string() const override { return name(); }
+    string to_string(int indent = -1) const override { return name(); }
 };
 
 struct EventSMInit : public Event
@@ -94,7 +94,7 @@ struct EventSMInit : public Event
     EventSMInit() : Event(id) {}
 
     string name() const override { return "EventSMInit"; }
-    string to_string() const override { return name(); }
+    string to_string(int indent = -1) const override { return name(); }
 };
 
 // Ready to use instances

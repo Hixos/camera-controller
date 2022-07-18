@@ -61,9 +61,9 @@
         {
             "type": "shell",
             "label": "GEN events",
-            "command": "${workspaceFolder}/src/cc_events/event_gen.py",
+            "command": "${workspaceFolder}/src/events/event_gen.py",
             "options": {
-                "cwd": "${workspaceFolder}/src/cc_events/",
+                "cwd": "${workspaceFolder}/src/events/",
             },
             "group": "test"
         },

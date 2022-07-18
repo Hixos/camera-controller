@@ -7,7 +7,8 @@
                 "${workspaceFolder}/src/",
                 "${workspaceFolder}/src/utils/logger/",
                 "${workspaceFolder}/src/events/",
-                "${workspaceFolder}/lib/json/single_include/"
+                "${workspaceFolder}/lib/json/single_include/",
+                "${workspaceFolder}/lib/argparse/include"
             ],
             "defines": [],
             "cStandard": "c11",

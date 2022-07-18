@@ -5,8 +5,9 @@ target = get_option('target')
 inc = [include_directories( 'src', 
                             'src/utils/logger', 
                             'src/events', 
-                            'lib/json/single_include/'
-)]
+                            'lib/json/single_include',
+                            'lib/argparse/include'
+                            )]
 
 # Sources
 main = 'src/main.cpp'
@@ -16,10 +17,10 @@ src = [
        'src/camera/CameraWidget.cpp',
        'src/utils/logger/PrintLogger.cpp',
        'src/utils/logger/TcpLogSink.cpp',
-       'src/events/Event.cpp',
+       'src/events/Events.cpp',
+       'src/events/EventBase.cpp',
        'src/events/EventBroker.cpp',
        'src/fsm/CameraController.cpp',
-       'src/cc_events/Events.cpp',
        'src/utils/debug/cli.cpp',
        'src/comm/JsonTcpServer.cpp'
        ]
@@ -39,7 +40,9 @@ tests = [
               'tests/event_demo.cpp',
               'tests/camera_controller_fsm.cpp',
               'tests/tcp_log.cpp',
-              'tests/server.cpp'
+              'tests/server.cpp',
+              'tests/move.cpp',
+              'tests/json_auto.cpp'
        ]
 src_tests = []
 

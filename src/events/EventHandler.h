@@ -26,7 +26,7 @@
 
 #include <memory>
 
-#include "Event.h"
+#include "EventBase.h"
 #include "utils/ActiveObject.h"
 #include "utils/collections/SyncCircularBuffer.h"
 

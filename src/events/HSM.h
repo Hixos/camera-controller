@@ -28,7 +28,7 @@
 
 #include <assert.h>
 
-#include "Event.h"
+#include "EventBase.h"
 #include "EventHandler.h"
 #include "utils/ActiveObject.h"
 #include "utils/collections/CircularBuffer.h"

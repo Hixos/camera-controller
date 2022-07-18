@@ -41,8 +41,7 @@ using std::make_shared;
 void printEvent(const EventPtr& ev, uint8_t topic)
 {
     PrintLogger log = Logging::getLogger("event");
-    LOG_EVENT(log, "Event {} on {}", ev->name(), getTopicName(topic));
-    LOG_DEBUG(log, "Event: {}", ev->to_string());
+    LOG_EVENT(log, "Event {}:{} = {}", ev->name(), getTopicName(topic),  ev->to_string());
 }
 
 int main()

@@ -115,18 +115,18 @@ for i, ev in enumerate(events):
         event_templ_d["to_string_format"] = ", ".join(
             [var["name"] + " = {}" for var in ev["vars"]]
         )
-        event_templ_d["to_string_format"] = (
-            "{{ " + event_templ_d["to_string_format"] + " }}"
-        )
-        event_templ_d["to_string_params"] = ", " + ", ".join(
+        event_templ_d["var_list"] = ", " + ", ".join(
             [var["name"] for var in ev["vars"]]
         )
+        event_templ_d["def_constructor"] = "\n{}() = default;".format(ev["name"])
+        event_templ_d["no_macro_args"] = ""
     else:
         event_templ_d["members"] = ""
         event_templ_d["c_params"] = ""
         event_templ_d["c_params_init"] = ""
-        event_templ_d["to_string_format"] = ""
-        event_templ_d["to_string_params"] = ""
+        event_templ_d["var_list"] = ""
+        event_templ_d["def_constructor"] = ""
+        event_templ_d["no_macro_args"] = "_NOARGS"
 
     file_templ_d["event_dec"] += event_dec_templ.substitute(**event_templ_d)
     file_templ_d["event_def"] += event_def_templ.substitute(**event_templ_d)

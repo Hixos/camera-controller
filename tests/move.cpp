@@ -20,45 +20,28 @@
  * THE SOFTWARE.
  */
 
-#include <thread>
-#include <chrono>
+#include <cassert>
 #include <memory>
 
-#include "EventBroker.h"
-#include "utils/logger/PrintLogger.h"
-#include "fsm/CameraController.h"
-#include "utils/EventSniffer.h"
-#include "utils/debug/cli.h"
+#include "utils/collections/SyncCircularBuffer.h"
 
-#include "TcpLogSink.h"
-
-using std::this_thread::sleep_for;
-using std::chrono::milliseconds;
-using std::chrono::seconds;
-using std::shared_ptr;
-using std::make_shared;
-
-void printEvent(const EventPtr& ev, uint8_t topic)
-{
-    PrintLogger log = Logging::getLogger("event");
-    LOG_EVENT(log, "Event {}:{} = {}", ev->name(), getTopicName(topic),  ev->to_string());
-}
-
+using namespace std;
 int main()
 {
-    CLI cli{};
-    cli.start();
+    SyncCircularBuffer<unique_ptr<int>, 200> buf1;
+    SyncCircularBuffer<int, 200> buf2;
 
-    PrintLogger log = Logging::getLogger("main");
-    Logging::addLogSink(make_shared<TcpLogSink>("192.168.1.101", 19996));
-    sBroker.start();
+    buf1.put(make_unique<int>(10));  // put(T&&) gets called
+    buf2.put(10);
 
-    EventSniffer sniffer{sEventBroker, &printEvent};
-    
-    CameraController camera;
-    camera.start();
+    unique_ptr<int> vpop = buf1.pop();  // Ok
+    // unique_ptr<int> vget =
+    //     buf1.get();  // Compilation error: SyncCircularBuffer<unique_ptr<int>,
+    //                  // 200>::get() is not enabled!
 
-    for(;;)
-        sleep_for(seconds(10));
-    return 0;
-}   
+    int vget2 =
+        buf2.get();  // OK! SyncCircularBuffer<int, 200>::get() is enabled
+
+    assert(*vpop == 10);
+    assert(vget2 == 10);
+}

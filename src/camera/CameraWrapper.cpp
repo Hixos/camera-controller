@@ -139,17 +139,23 @@ string CameraWrapper::getCameraInfo()
     return info;
 }
 
-RadioMenuConfig CameraWrapper::getShutterSpeed()
+CameraWrapper::ShutterSpeedConfig CameraWrapper::getShutterSpeed()
 {
     CameraWidgetRadio widget{*this, CONFIG_SHUTTER_SPEED};
 
     vector<int> choices = listExposureTimes(widget);
-    unsigned int id     = widget.getID();
-
-    return {.index = id, .value = choices.at(id), .name = widget.getValue()};
+    unsigned int choice          = widget.getID();
+    if (choice == bulb_choice)
+    {
+        return {.shutter_speed = bulb_shutter_speed, .bulb = true};
+    }
+    else
+    {
+        return {.shutter_speed = choices.at(choice), .bulb = false};
+    }
 }
 
-void CameraWrapper::setShutterSpeed(int shutter_speed)
+void CameraWrapper::setShutterSpeed(int32_t shutter_speed)
 {
     CameraWidgetRadio widget{*this, CONFIG_SHUTTER_SPEED};
 
@@ -183,14 +189,14 @@ vector<int> CameraWrapper::listExposureTimes(CameraWidgetRadio& widget,
         widget, &CameraStringConversion::exposureToMicroseconds, include_bulb);
 }
 
-RadioMenuConfig CameraWrapper::getAperture()
+int32_t CameraWrapper::getAperture()
 {
     CameraWidgetRadio widget{*this, CONFIG_APERTURE};
 
     vector<int> choices = listApertures(widget);
     unsigned int id     = widget.getID();
 
-    return {.index = id, .value = choices.at(id), .name = widget.getValue()};
+    return choices.at(id);
 }
 
 void CameraWrapper::setAperture(int aperture)
@@ -214,17 +220,17 @@ vector<int> CameraWrapper::listApertures(CameraWidgetRadio& widget)
     return choicesStringToInt(widget, &CameraStringConversion::apertureToInt);
 }
 
-RadioMenuConfig CameraWrapper::getISO()
+int32_t CameraWrapper::getISO()
 {
     CameraWidgetRadio widget{*this, CONFIG_ISO};
 
     vector<int> choices = listISOs(widget);
     unsigned int id     = widget.getID();
 
-    return {.index = id, .value = choices.at(id), .name = widget.getValue()};
+    return choices.at(id);
 }
 
-void CameraWrapper::setISO(int iso)
+void CameraWrapper::setISO(int32_t iso)
 {
     CameraWidgetRadio widget{*this, CONFIG_ISO};
     vector<int> choices = listISOs(widget);
@@ -337,7 +343,7 @@ void CameraWrapper::bulb(int value)
 CameraPath CameraWrapper::capture()
 {
     auto ss = getShutterSpeed();
-    if (ss.value < 0)
+    if (ss.bulb == true)
     {
         LOG_DEBUG(log, "Chosen bulb capture.");
         return bulbCapture(bulb_shutter_speed);

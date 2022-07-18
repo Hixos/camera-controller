@@ -25,10 +25,9 @@
 #include <cstdint>
 #include <string>
 
-#include "cc_events/Events.h"
+#include "Events.h"
 #include "events/HSM.h"
 
-#include "CameraData.h"
 #include "camera/CameraWrapper.h"
 #include "utils/logger/PrintLogger.h"
 
@@ -40,7 +39,7 @@ public:
     enum class CCState : uint8_t
     {
         DISCONNECTED = 0,
-        CONNECTED = 1,
+        READY = 1,
         CONNECTION_ERROR = 2,
         ERROR = 3,
         CAPTURING = 4,
@@ -53,6 +52,7 @@ public:
     State stateSuper(const EventPtr& ev);
     State stateDisconnected(const EventPtr& ev);
     State stateConnected(const EventPtr& ev);
+    State stateReady(const EventPtr& ev);
     State stateConnectionError(const EventPtr& ev);
     State stateError(const EventPtr& ev);
 
@@ -74,9 +74,9 @@ private:
     string download_dir;
     gphotow::CameraPath last_capture_path;
     bool do_download = false;
+    bool low_latency = false;
 
     gphotow::CameraWrapper camera{};
-    CameraCommonConfig camera_config{};
 
     PrintLogger log = Logging::getLogger("CameraController");
 

@@ -33,7 +33,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "events/Event.h"
+#include "EventBase.h"
 #include "events/EventHandler.h"
 #include "utils/ActiveObject.h"
 #include "utils/Singleton.h"
@@ -79,10 +79,24 @@ public:
     template <
         typename EventClass,
         typename = std::enable_if_t<std::is_base_of<Event, EventClass>::value>>
-    void post(const EventClass&& ev, uint8_t topic)
+    void post(EventClass&& ev, uint8_t topic)
     {
         post(std::make_shared<const EventClass>(ev), topic);
     }
+
+    /**
+     * Posts an event to the specified topic.
+     * @param ev
+     * @param topic
+     */
+    template <
+        typename EventClass,
+        typename = std::enable_if_t<std::is_base_of<Event, EventClass>::value>>
+    void post(const EventClass& ev, uint8_t topic)
+    {
+        post(std::make_shared<const EventClass>(ev), topic);
+    }
+
     /**
      * Posts an event after the specified delay.
      *

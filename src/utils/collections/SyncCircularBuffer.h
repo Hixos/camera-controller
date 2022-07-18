@@ -66,7 +66,7 @@ public:
     }
 
     /**
-     * @brief Puts a copy of the element in the buffer.
+     * @brief Moves the element in the buffer.
      *
      * @param elem Element to be added to the queue.
      * @return The element added.
@@ -82,6 +82,57 @@ public:
     }
 
     /**
+     * @brief Gets an element from the buffer, without removing it.
+     *
+     * Index starts from the oldest element in the buffer.
+     * get() returns the first element.
+     *
+     * @warning Remember to catch the exception!
+     * @throw range_error if index >= count().
+     * @param i Index of the element to get, starting from the oldest.
+     * @return The element.
+     */
+    template <typename T1 = T,
+              typename    = std::enable_if_t<std::is_copy_assignable_v<T1>>>
+    T get(unsigned int i = 0)
+    {
+        lock_guard<mutex> lock(mut);
+        return buf.get(i);
+    }
+
+    /**
+     * @brief Gets the first element in the buffer. This call block until an
+     * element is available.
+     *
+     * @warning Remember to catch the exception!
+     * @throw range_error if buffer is empty.
+     * @return The element that has been popped.
+     */
+    template <typename T1 = T,
+              typename    = std::enable_if_t<std::is_copy_assignable_v<T1>>>
+    T getBlocking()
+    {
+        unique_lock<mutex> lock(mut);
+        cv.wait(lock, [&] { return buf.isEmpty() == false; });
+        return buf.get();
+    }
+
+    /**
+     * @brief Returns the last element added in the buffer.
+     *
+     * @warning Remember to catch the exception!
+     * @throw range_error if buffer is empty.
+     * @return The element.
+     */
+    template <typename T1 = T,
+              typename    = std::enable_if_t<std::is_copy_assignable_v<T1>>>
+    T last()
+    {
+        lock_guard<mutex> lock(mut);
+        return buf.last();
+    }
+
+    /**
      * @brief Pops the first element in the buffer.
      *
      * @warning Remember to catch the exception!
@@ -91,20 +142,33 @@ public:
     T pop()
     {
         lock_guard<mutex> lock(mut);
-
         return std::move(buf.pop());
     }
 
-
+    /**
+     * @brief Pops the first element in the buffer. This call block until an
+     * element is available.
+     *
+     *
+     * @warning Remember to catch the exception!
+     * @throw range_error if buffer is empty.
+     * @return The element that has been popped.
+     */
     T popBlocking()
     {
         unique_lock<mutex> lock(mut);
-        if (buf.isEmpty())
-            cv.wait(lock, [&] { return buf.isEmpty() == false; });
-
+        cv.wait(lock, [&] { return buf.isEmpty() == false; });
         return std::move(buf.pop());
     }
 
+    /**
+     * @brief Waits until the buffer contains at least one element.
+     */
+    void waitUntilNotEmpty()
+    {
+        unique_lock<mutex> lock(mut);
+        cv.wait(lock, [&] { return buf.isEmpty() == false; });
+    }
 
     /**
      * @brief Counts the elements in the buffer.

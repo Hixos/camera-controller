@@ -1,13 +1,15 @@
 struct $event_name : public Event
 {
     static constexpr uint16_t id = $id_val;
-
+    $def_constructor
     $event_name($c_params);
 
     string name() const override;
 
-    string to_string() const override;
+    string to_string(int indent = -1) const override;
     
 $members
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE$no_macro_args($event_name$var_list);
 };
 

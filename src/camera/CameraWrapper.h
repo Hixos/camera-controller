@@ -23,16 +23,18 @@
 #pragma once
 
 #include <gphoto2/gphoto2.h>
+#include <scn/scn.h>
 #include <stdlib.h>
 
 #include <chrono>
 #include <cstring>
 #include <functional>
 #include <map>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
-#include <scn/scn.h>
 
 #include "CameraExceptions.h"
 #include "CameraWidget.h"
@@ -41,6 +43,7 @@
 
 using std::function;
 using std::map;
+using std::pair;
 using std::string;
 using std::vector;
 using std::chrono::milliseconds;
@@ -49,7 +52,6 @@ using std::chrono::seconds;
 namespace gphotow
 {
 static const string NOT_A_GOOD_SERIAL = "NOT_A_GOOD_SERIAL";
-
 
 struct CameraPath
 {
@@ -74,22 +76,17 @@ struct CameraPath
 
 using CameraEvent = std::pair<CameraEventType, std::optional<CameraPath>>;
 
-struct RadioMenuConfig
-{
-    unsigned int index;
-    int value;
-    string name;
-};
-
-struct CameraExposureChoices
-{
-};
-
 class CameraWrapper
 {
     friend class CameraWidgetBase;
 
 public:
+    struct ShutterSpeedConfig
+    {
+        int32_t shutter_speed;
+        bool bulb;
+    };
+
     CameraWrapper();
     ~CameraWrapper();
 
@@ -164,7 +161,7 @@ public:
      * @throw GPhotoError
      * @return exposure time in usec or 0 if error, -1 if BULB
      */
-    RadioMenuConfig getShutterSpeed();
+    ShutterSpeedConfig getShutterSpeed();
 
     /**
      * @brief Sets the exposure time
@@ -172,7 +169,7 @@ public:
      * @param    exposuretime Exposure time in us. Must be one of the values
      * returned in listExposureTimes()
      */
-    void setShutterSpeed(int shutter_speed);
+    void setShutterSpeed(int32_t shutter_speed);
 
     /**
      * @brief Lists all the available exposure times in the current exposure
@@ -196,7 +193,7 @@ public:
      * @throw GPhotoError
      * @return F Number * 100, 0 if error
      */
-    RadioMenuConfig getAperture();
+    int32_t getAperture();
 
     /**
      * @brief Sets the aperture
@@ -204,7 +201,7 @@ public:
      * @param    aperture F-Number * 100. Must be one of the values
      * returned in listApertures()
      */
-    void setAperture(int aperture);
+    void setAperture(int32_t aperture);
 
     /**
      * @brief Lists all the available apertures.
@@ -224,14 +221,14 @@ public:
      * @throw GPhotoError
      * @return ISO, 0 if error
      */
-    RadioMenuConfig getISO();
+    int32_t getISO();
 
     /**
      * @brief Sets the aperture
      * @throw GPhotoError
      * @param    iso Must be one of the values returned in listISOs()
      */
-    void setISO(int iso);
+    void setISO(int32_t iso);
 
     /**
      * @brief Lists all the available ISOs.

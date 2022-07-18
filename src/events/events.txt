@@ -2,9 +2,6 @@ TOPIC_CAMERA_CONFIG
 TOPIC_CAMERA_CMD
 TOPIC_CAMERA_EVENT
 
-#include "camera/CameraWrapper.h"
-#include "fsm/CameraData.h"
-
 EventCameraCmdConnect
 EventCameraCmdDisconnect
 EventCameraCmdRecoverError
@@ -17,11 +14,15 @@ EventCameraCmdDownload
 EventCameraCmdDownload_Internal
 
 EventCameraConnected
+EventCameraReady
 EventCameraDisconnected
 EventCameraConnectionError
 EventCameraError
 EventCameraIgnoreError
-
+EventCameraCmdLowLatency
+{
+    bool low_latency
+}
 
 
 
@@ -36,42 +37,37 @@ EventCameraControllerState
     uint8_t state
 }
 
+
+EventConfigGetShutterSpeed
 EventConfigSetShutterSpeed
 {
     int32_t shutter_speed
 }
+EventConfigValueShutterSpeed
+{
+    int32_t shutter_speed
+    bool bulb
+}
 
+EventConfigGetAperture
 EventConfigSetAperture
 {
     int32_t aperture
 }
 
+EventConfigValueAperture
+{
+    int32_t aperture
+}
+
+EventConfigGetISO
 EventConfigSetISO
 {
     int32_t iso
 }
-
-EventConfigSetCaptureTarget
-{
-    string target
-}
-
-EventConfigGetShutterSpeed
-EventConfigValueShutterSpeed
-{
-    gphotow::RadioMenuConfig shutter_speed
-}
-
-EventConfigGetAperture
-EventConfigValueAperture
-{
-    gphotow::RadioMenuConfig aperture
-}
-
-EventConfigGetISO
 EventConfigValueISO
 {
-    gphotow::RadioMenuConfig iso
+    int32_t iso
 }
 
 EventConfigGetBattery
@@ -89,7 +85,7 @@ EventConfigValueFocalLength
 EventConfigGetFocusMode
 EventConfigValueFocusMode
 {
-    gphotow::RadioMenuConfig focues_mode 
+    string focus_mode 
 }
 
 EventConfigGetLongExpNR
@@ -101,17 +97,24 @@ EventConfigValueLongExpNR
 EventConfigGetVibRed
 EventConfigValueVibRed
 {
-    gphotow::RadioMenuConfig vr
-}
-
-EventConfigGetCommon
-EventConfigValueCommon
-{
-    CameraCommonConfig common_config
+    bool vr
 }
 
 EventConfigGetCaptureTarget
+EventConfigSetCaptureTarget
+{
+    string target
+}
 EventConfigValueCaptureTarget
 {
     string target
 }
+
+EventConfigGetCameraMode
+EventConfigValueCameraMode
+{
+    string target
+}
+
+
+EventConfigGetCommon
