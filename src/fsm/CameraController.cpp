@@ -48,7 +48,7 @@ State CameraController::stateInit(const EventPtr& ev)
 
 State CameraController::stateSuper(const EventPtr& ev)
 {
-    auto slog      = log.getChild("stateSuper");
+    auto slog      = log.getChild("S_SUP");
     State retState = HANDLED;
     switch (ev->getID())
     {
@@ -83,7 +83,7 @@ State CameraController::stateSuper(const EventPtr& ev)
 
 State CameraController::stateDisconnected(const EventPtr& ev)
 {
-    auto slog      = log.getChild("stateDisconnected");
+    auto slog      = log.getChild("S_DISC");
     State retState = HANDLED;
     switch (ev->getID())
     {
@@ -112,7 +112,7 @@ State CameraController::stateDisconnected(const EventPtr& ev)
 
 State CameraController::stateConnected(const EventPtr& ev)
 {
-    auto slog      = log.getChild("stateConnected");
+    auto slog      = log.getChild("S_CONN");
     State retState = HANDLED;
     switch (ev->getID())
     {
@@ -149,7 +149,7 @@ State CameraController::stateConnected(const EventPtr& ev)
 
 State CameraController::stateReady(const EventPtr& ev)
 {
-    auto slog      = log.getChild("stateReady");
+    auto slog      = log.getChild("S_RDY");
     State retState = HANDLED;
     switch (ev->getID())
     {
@@ -204,7 +204,7 @@ State CameraController::stateReady(const EventPtr& ev)
 
 State CameraController::stateConnectionError(const EventPtr& ev)
 {
-    auto slog      = log.getChild("stateConnectionError");
+    auto slog      = log.getChild("S_CONERR");
     State retState = HANDLED;
     switch (ev->getID())
     {
@@ -234,7 +234,7 @@ State CameraController::stateConnectionError(const EventPtr& ev)
 
 State CameraController::stateError(const EventPtr& ev)
 {
-    auto slog                           = log.getChild("stateError");
+    auto slog                           = log.getChild("S_ERR");
     State retState                      = HANDLED;
     static constexpr int RETRY_DELAY_MS = 2000;
     switch (ev->getID())
@@ -281,7 +281,7 @@ State CameraController::stateError(const EventPtr& ev)
 
 State CameraController::stateCapturing(const EventPtr& ev)
 {
-    auto slog      = log.getChild("stateCapturing");
+    auto slog      = log.getChild("S_CAPT");
     State retState = HANDLED;
     switch (ev->getID())
     {
@@ -338,7 +338,7 @@ State CameraController::stateCapturing(const EventPtr& ev)
 
 State CameraController::stateDownloading(const EventPtr& ev)
 {
-    auto slog      = log.getChild("stateDownloading");
+    auto slog      = log.getChild("S_DOWN");
     State retState = HANDLED;
     switch (ev->getID())
     {
