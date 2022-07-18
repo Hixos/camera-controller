@@ -42,9 +42,16 @@ using nlohmann::json;
 class JsonTcpServer : public ActiveObject
 {  
 public:
-    using ReceiverFun = function<void(json)>;
+    using ReceiverFun = function<void(const json&)>;
 
     JsonTcpServer(uint16_t port, ReceiverFun fun);
+
+    JsonTcpServer(const JsonTcpServer& other) = delete;
+    JsonTcpServer(JsonTcpServer&& other) = delete;
+
+    JsonTcpServer& operator=(const JsonTcpServer& rhs) = delete;
+    JsonTcpServer& operator=(JsonTcpServer&& rhs) = delete;
+
     ~JsonTcpServer();
 
     bool isConnected();
@@ -55,7 +62,7 @@ public:
     void send(json&& j);
 
     struct TcpAcceptorError : public std::exception
-    {
+    { 
         TcpAcceptorError(std::string wh) : wh(wh) {}
 
         const char* what() const noexcept override { return wh.c_str(); }

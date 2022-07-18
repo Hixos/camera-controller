@@ -49,6 +49,11 @@ public:
      * priority of the thread that will be spawned
      */
     ActiveObject() {}
+    ActiveObject(const ActiveObject& other) = delete;
+    ActiveObject(ActiveObject&& other) = delete;
+
+    ActiveObject& operator=(const ActiveObject& other) = delete;
+    ActiveObject& operator=(ActiveObject&& other) = delete;
 
     virtual ~ActiveObject()
     {

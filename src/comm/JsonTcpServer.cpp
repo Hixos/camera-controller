@@ -74,9 +74,17 @@ bool JsonTcpServer::isConnected()
     return is_connected;
 }
 
-void JsonTcpServer::send(json&& j) { buf_out.put(std::move(j)); }
+void JsonTcpServer::send(json&& j)
+{
+    LOG_DEBUG(log, "Sending json packet: {}", j.dump(-1));
+    buf_out.put(std::move(j));
+}
 
-void JsonTcpServer::send(const json& j) { buf_out.put(j); }
+void JsonTcpServer::send(const json& j)
+{
+    LOG_DEBUG(log, "Sending json packet: {}", j.dump(-1));
+    buf_out.put(j);
+}
 
 void JsonTcpServer::run()
 {
