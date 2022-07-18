@@ -137,7 +137,7 @@ private:
 
     Logging() : asyncLog(*this)
     {
-        shared_ptr<FileLogSink> serial = std::make_shared<FileLogSink>(stdout);
+        shared_ptr<StdoutLogSink> serial = std::make_shared<StdoutLogSink>();
         serial->setLevel(DEFAULT_STDOUT_LOG_LEVEL);
         sinks.push_back(std::move(serial));
     }

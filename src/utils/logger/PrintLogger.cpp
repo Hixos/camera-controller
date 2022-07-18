@@ -56,31 +56,6 @@ string getLevelString(uint8_t level)
     }
 }
 
-void LogSink::log(const LogRecord& record)
-{
-    if (record.level >= minimumLevel)
-    {
-        logImpl(record);
-    }
-}
-
-void FileLogSink::logImpl(const LogRecord& record)
-{
-    using namespace fmt::literals;
-    // const auto tsStr =
-    //     fmt::format("{::%Y-%m-%d %H:%M:%S}", fmt::localtime(record.created));
-
-    string l = fmt::format(format, fmt::localtime(record.created),
-                           "file"_a = record.file, "line"_a = record.line,
-                           "fun"_a  = record.function,
-                           "lvl"_a  = getLevelString(record.level),
-                           "name"_a = record.name, "msg"_a = record.message);
-    // string l = fmt::format("{} {} {}", getLevelString(record.level), record.name, record.message);
-
-    lock_guard<mutex> guard(mutex_file);
-    fwrite(l.c_str(), sizeof(char), l.length(), f);
-}
-
 PrintLogger PrintLogger::getChild(const string& name)
 {
     return PrintLogger(parent, this->name + "." + name);

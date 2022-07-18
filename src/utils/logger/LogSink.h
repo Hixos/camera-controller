@@ -60,6 +60,26 @@ private:
 /**
  * This class directly outputs the log to file.
  */
+class StdoutLogSink : public LogSink
+{
+public:
+    StdoutLogSink() {}
+
+    void setFormatString(const std::string& format) { this->format = format; }
+
+protected:
+    void logImpl(const LogRecord& record) override;
+
+    FILE* f;
+    mutex mutex_file;
+
+private:
+    std::string format = "{:%H:%M:%S} {lvl:^8} {name:^20} > {msg}\n";
+};
+
+/**
+ * This class directly outputs the log to file.
+ */
 class FileLogSink : public LogSink
 {
 public:
@@ -77,6 +97,5 @@ protected:
     mutex mutex_file;
 
 private:
-    // std::string format = "{::%Y-%m-%d %H:%M:%S} {file}:{line} {fun} {lvl}\t[{name}]\t{msg}\n";
-    std::string format = "{::%H:%M:%S} {fun} {lvl}\t[{name}]\t{msg}\n";
+    std::string format = "{::%Y-%m-%d %H:%M:%S} {file}:{line} {fun} {lvl}\t[{name}]\t{msg}\n";
 };
