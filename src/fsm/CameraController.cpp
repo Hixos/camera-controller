@@ -191,6 +191,7 @@ State CameraController::stateReady(const EventPtr& ev)
         case EventConfigGetChoicesShutterSpeed::id:
         case EventConfigGetChoicesAperture::id:
         case EventConfigGetChoicesISO::id:
+        case EventConfigGetLightMeter::id:
             if (!getConfig(ev))
                 retState = transition(&CameraController::stateError);
             break;
@@ -428,6 +429,14 @@ bool CameraController::getCommonConfig()
             TOPIC_CAMERA_CONFIG);
         sEventBroker.post(EventConfigChoicesISO{camera.getIsoChoices()},
                           TOPIC_CAMERA_CONFIG);
+        float light_meter = camera.getLightMeter();
+        CameraWidgetRange::Range light_meter_range =
+            camera.getLightMeterRange();
+
+        sEventBroker.post(
+            EventConfigValueLightMeter(light_meter, light_meter_range.min,
+                                       light_meter_range.max),
+            TOPIC_CAMERA_CONFIG);
         return true;
     }
     catch (gphotow::GPhotoError& gpe)
@@ -594,6 +603,16 @@ bool CameraController::getConfig(const EventPtr& ev)
                     EventConfigValueCaptureTarget{camera.getCaptureTarget()},
                     TOPIC_CAMERA_CONFIG);
                 break;
+            case EventConfigGetLightMeter::id:
+            {
+                float val                      = camera.getLightMeter();
+                CameraWidgetRange::Range range = camera.getLightMeterRange();
+
+                sEventBroker.post(
+                    EventConfigValueLightMeter(val, range.min, range.max),
+                    TOPIC_CAMERA_CONFIG);
+                break;
+            }
             default:
                 LOG_ERR(log, "Unknow config getter event: {}", ev->name());
                 break;

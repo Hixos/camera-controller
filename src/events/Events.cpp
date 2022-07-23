@@ -26,7 +26,7 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-23 02:27:59.975319
+// Autogen date:    2022-07-23 13:13:52.955652
 
 #include "Events.h"
 
@@ -1046,6 +1046,52 @@ nlohmann::json EventConfigValueCameraMode::to_json() const
     return nlohmann::json(*this);
 }
 
+EventConfigGetLightMeter::EventConfigGetLightMeter() : Event(id) {}
+
+string EventConfigGetLightMeter::name() const
+{
+    return "EventConfigGetLightMeter";
+}
+
+string EventConfigGetLightMeter::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetLightMeter::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventConfigValueLightMeter::EventConfigValueLightMeter(float light_meter,
+                                                       float min, float max)
+    : Event(id), light_meter(light_meter), min(min), max(max)
+{
+}
+
+string EventConfigValueLightMeter::name() const
+{
+    return "EventConfigValueLightMeter";
+}
+
+string EventConfigValueLightMeter::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigValueLightMeter::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
 EventConfigGetCommon::EventConfigGetCommon() : Event(id) {}
 
 string EventConfigGetCommon::name() const { return "EventConfigGetCommon"; }
@@ -1247,6 +1293,14 @@ EventPtr jsonToEvent(const nlohmann::json& j)
         case EventConfigValueCameraMode::id:
             return make_shared<EventConfigValueCameraMode>(
                 j.get<EventConfigValueCameraMode>());
+            break;
+        case EventConfigGetLightMeter::id:
+            return make_shared<EventConfigGetLightMeter>(
+                j.get<EventConfigGetLightMeter>());
+            break;
+        case EventConfigValueLightMeter::id:
+            return make_shared<EventConfigValueLightMeter>(
+                j.get<EventConfigValueLightMeter>());
             break;
         case EventConfigGetCommon::id:
             return make_shared<EventConfigGetCommon>(

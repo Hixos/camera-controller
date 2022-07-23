@@ -43,4 +43,6 @@ static const string CONFIG_BURST_COUNT      = "burstnumber";
 static const string CONFIG_FOCAL_LENGHT     = "focallength";
 static const string CONFIG_BULB             = "bulb";
 static const string CONFIG_LONG_EXP_NR      = "longexpnr";
+static const string CONFIG_LIGHT_METER      = "lightmeter";
+
 

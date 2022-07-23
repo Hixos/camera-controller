@@ -132,5 +132,12 @@ EventConfigValueCameraMode
     string target
 }
 
+EventConfigGetLightMeter
+EventConfigValueLightMeter
+{
+    float light_meter
+    float min
+    float max
+}
 
 EventConfigGetCommon

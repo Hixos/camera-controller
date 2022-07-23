@@ -26,7 +26,7 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-23 02:27:59.975319
+// Autogen date:    2022-07-23 13:13:52.955652
 
 #include <cassert>
 #include <cstdint>
@@ -813,9 +813,45 @@ struct EventConfigValueCameraMode : public Event
     JSON_EVENT_SERIALIZATION_INTRUSIVE(EventConfigValueCameraMode, target);
 };
 
-struct EventConfigGetCommon : public Event
+struct EventConfigGetLightMeter : public Event
 {
     static constexpr uint16_t id = 56;
+
+    EventConfigGetLightMeter();
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetLightMeter);
+};
+
+struct EventConfigValueLightMeter : public Event
+{
+    static constexpr uint16_t id = 57;
+
+    EventConfigValueLightMeter() : Event(id){};
+    EventConfigValueLightMeter(float light_meter, float min, float max);
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    float light_meter;
+    float min;
+    float max;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventConfigValueLightMeter, light_meter,
+                                       min, max);
+};
+
+struct EventConfigGetCommon : public Event
+{
+    static constexpr uint16_t id = 58;
 
     EventConfigGetCommon();
 

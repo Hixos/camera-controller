@@ -221,7 +221,18 @@ class EventConfigValueCameraMode : Event(55)
     @SerializedName("target" ) var target : String? = null
 }
 
-class EventConfigGetCommon : Event(56) 
+class EventConfigGetLightMeter : Event(56) 
+{
+}
+
+class EventConfigValueLightMeter : Event(57) 
+{
+    @SerializedName("light_meter" ) var lightMeter : Float? = null
+    @SerializedName("min" ) var min : Float? = null
+    @SerializedName("max" ) var max : Float? = null
+}
+
+class EventConfigGetCommon : Event(58) 
 {
 }
 
@@ -279,7 +290,9 @@ fun jsonToEvent(json: String) : Event?
         53 -> return gson.fromJson(json, EventConfigValueCaptureTarget::class.java)
         54 -> return gson.fromJson(json, EventConfigGetCameraMode::class.java)
         55 -> return gson.fromJson(json, EventConfigValueCameraMode::class.java)
-        56 -> return gson.fromJson(json, EventConfigGetCommon::class.java)
+        56 -> return gson.fromJson(json, EventConfigGetLightMeter::class.java)
+        57 -> return gson.fromJson(json, EventConfigValueLightMeter::class.java)
+        58 -> return gson.fromJson(json, EventConfigGetCommon::class.java)
 
         
         else -> return null

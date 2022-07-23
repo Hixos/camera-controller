@@ -289,6 +289,9 @@ public:
      */
     string getCaptureTarget();
 
+    float getLightMeter();
+    CameraWidgetRange::Range getLightMeterRange();
+
     // /**
     //  * @brief Lists all the available trigger modes
     //  * @throw GPhotoError

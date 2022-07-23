@@ -184,10 +184,17 @@ const map<string, function<bool()>> CameraCLI::config_getters{
          sBroker.post(EventConfigGetFocusMode{}, TOPIC_CAMERA_CMD);
          return true;
      }},
-    {"long_exp_nr", []() {
+    {"long_exp_nr",
+     []() {
          sBroker.post(EventConfigGetLongExpNR{}, TOPIC_CAMERA_CMD);
          return true;
-     }}};
+     }},
+    {"light_meter",
+     []() {
+         sBroker.post(EventConfigGetLightMeter{}, TOPIC_CAMERA_CMD);
+         return true;
+     }},
+};
 
 const map<string, function<bool()>> CameraCLI::config_choices{
     {"shutter_speed",
@@ -267,6 +274,7 @@ public:
         }
         return false;
     }
+
 private:
     static bool setLevel(string cmd)
     {
@@ -323,7 +331,7 @@ void CLI::run()
             {
                 if (targets.count(target))
                 {
-                    if(!targets.at(target)(res.range_as_string()))
+                    if (!targets.at(target)(res.range_as_string()))
                     {
                         LOG_ERR(log, "Invalid command");
                     }

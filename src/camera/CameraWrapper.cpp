@@ -313,6 +313,18 @@ string CameraWrapper::getCaptureTarget()
     return widget.getValue();
 }
 
+float CameraWrapper::getLightMeter()
+{
+    CameraWidgetRange widget{*this, CONFIG_LIGHT_METER};
+    return widget.getValue();
+}
+
+ CameraWidgetRange::Range CameraWrapper::getLightMeterRange()
+{
+    CameraWidgetRange widget{*this, CONFIG_LIGHT_METER};
+    return widget.getRange();
+}
+
 // int CameraWrapper::getBurstCount()
 // {
 //     CameraWidgetText widget{*this, CONFIG_BURST_COUNT};
