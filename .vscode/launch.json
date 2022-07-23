@@ -39,10 +39,10 @@
             ]
         },
         {
-            "name": "(gdb) Launch CC2",
+            "name": "(gdb) Launch CC3",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/builddir/debug/cc2",
+            "program": "${workspaceFolder}/builddir/debug/cc3",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
@@ -62,6 +62,6 @@
                     "ignoreFailures": true
                 }
             ]
-        }
+        },
     ]
 }
