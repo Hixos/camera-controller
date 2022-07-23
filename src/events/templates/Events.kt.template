@@ -1,0 +1,29 @@
+package it.hixos.cameracontroller
+
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
+
+open class Event(id: Int)
+{
+    @SerializedName("event_id" ) private var _id : Int = 0
+
+    init {
+        this._id = id
+    }
+    fun getId() : Int = _id
+
+}
+
+$kotlin_event_def
+
+fun jsonToEvent(json: String) : Event?
+{
+    val gson = Gson()
+    val e: Event = gson.fromJson(json, Event::class.java)
+    when(e.getId())
+    {
+$kotlin_event_switch
+        
+        else -> return null
+    }
+}

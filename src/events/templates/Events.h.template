@@ -31,11 +31,14 @@
 #include <cassert>
 #include <cstdint>
 #include <string>
+#include <vector>
 #include <type_traits>
 
 #include "EventBase.h"
-
 $includes
+
+using std::string;
+using std::vector;
 
 enum Topics : uint8_t
 {

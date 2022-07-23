@@ -1,6 +1,7 @@
 TOPIC_CAMERA_CONFIG
 TOPIC_CAMERA_CMD
 TOPIC_CAMERA_EVENT
+TOPIC_REMOTE_CMD
 
 EventCameraCmdConnect
 EventCameraCmdDisconnect
@@ -39,6 +40,7 @@ EventCameraControllerState
 
 
 EventConfigGetShutterSpeed
+EventConfigGetChoicesShutterSpeed
 EventConfigSetShutterSpeed
 {
     int32_t shutter_speed
@@ -48,8 +50,13 @@ EventConfigValueShutterSpeed
     int32_t shutter_speed
     bool bulb
 }
+EventConfigChoicesShutterSpeed
+{
+    vector<int32_t> shutter_speed_choices
+}
 
 EventConfigGetAperture
+EventConfigGetChoicesAperture
 EventConfigSetAperture
 {
     int32_t aperture
@@ -59,8 +66,13 @@ EventConfigValueAperture
 {
     int32_t aperture
 }
+EventConfigChoicesAperture
+{
+    vector<int32_t> aperture_choices
+}
 
 EventConfigGetISO
+EventConfigGetChoicesISO
 EventConfigSetISO
 {
     int32_t iso
@@ -68,6 +80,10 @@ EventConfigSetISO
 EventConfigValueISO
 {
     int32_t iso
+}
+EventConfigChoicesISO
+{
+    vector<int32_t> iso_choices
 }
 
 EventConfigGetBattery

@@ -1,0 +1,4 @@
+class $event_name : Event($id_val) 
+{$kotlin_vars
+}
+

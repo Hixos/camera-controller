@@ -26,7 +26,7 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-19 01:20:56.724005
+// Autogen date:    2022-07-23 02:27:59.975319
 
 #include "Events.h"
 
@@ -40,12 +40,14 @@ using std::map;
 const map<uint8_t, string> topic_string_map = {
     {TOPIC_CAMERA_CONFIG, "TOPIC_CAMERA_CONFIG"},
     {TOPIC_CAMERA_CMD, "TOPIC_CAMERA_CMD"},
-    {TOPIC_CAMERA_EVENT, "TOPIC_CAMERA_EVENT"}};
+    {TOPIC_CAMERA_EVENT, "TOPIC_CAMERA_EVENT"},
+    {TOPIC_REMOTE_CMD, "TOPIC_REMOTE_CMD"}};
 
 const map<string, uint8_t> topic_id_map = {
     {"TOPIC_CAMERA_CONFIG", TOPIC_CAMERA_CONFIG},
     {"TOPIC_CAMERA_CMD", TOPIC_CAMERA_CMD},
-    {"TOPIC_CAMERA_EVENT", TOPIC_CAMERA_EVENT}};
+    {"TOPIC_CAMERA_EVENT", TOPIC_CAMERA_EVENT},
+    {"TOPIC_REMOTE_CMD", TOPIC_REMOTE_CMD}};
 
 string getTopicName(uint8_t topic)
 {
@@ -414,6 +416,30 @@ nlohmann::json EventConfigGetShutterSpeed::to_json() const
     return nlohmann::json(*this);
 }
 
+EventConfigGetChoicesShutterSpeed::EventConfigGetChoicesShutterSpeed()
+    : Event(id)
+{
+}
+
+string EventConfigGetChoicesShutterSpeed::name() const
+{
+    return "EventConfigGetChoicesShutterSpeed";
+}
+
+string EventConfigGetChoicesShutterSpeed::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetChoicesShutterSpeed::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
 EventConfigSetShutterSpeed::EventConfigSetShutterSpeed(int32_t shutter_speed)
     : Event(id), shutter_speed(shutter_speed)
 {
@@ -463,6 +489,31 @@ nlohmann::json EventConfigValueShutterSpeed::to_json() const
     return nlohmann::json(*this);
 }
 
+EventConfigChoicesShutterSpeed::EventConfigChoicesShutterSpeed(
+    vector<int32_t> shutter_speed_choices)
+    : Event(id), shutter_speed_choices(shutter_speed_choices)
+{
+}
+
+string EventConfigChoicesShutterSpeed::name() const
+{
+    return "EventConfigChoicesShutterSpeed";
+}
+
+string EventConfigChoicesShutterSpeed::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigChoicesShutterSpeed::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
 EventConfigGetAperture::EventConfigGetAperture() : Event(id) {}
 
 string EventConfigGetAperture::name() const { return "EventConfigGetAperture"; }
@@ -477,6 +528,27 @@ string EventConfigGetAperture::to_string(int indent) const
 }
 
 nlohmann::json EventConfigGetAperture::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventConfigGetChoicesAperture::EventConfigGetChoicesAperture() : Event(id) {}
+
+string EventConfigGetChoicesAperture::name() const
+{
+    return "EventConfigGetChoicesAperture";
+}
+
+string EventConfigGetChoicesAperture::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetChoicesAperture::to_json() const
 {
     return nlohmann::json(*this);
 }
@@ -526,6 +598,31 @@ nlohmann::json EventConfigValueAperture::to_json() const
     return nlohmann::json(*this);
 }
 
+EventConfigChoicesAperture::EventConfigChoicesAperture(
+    vector<int32_t> aperture_choices)
+    : Event(id), aperture_choices(aperture_choices)
+{
+}
+
+string EventConfigChoicesAperture::name() const
+{
+    return "EventConfigChoicesAperture";
+}
+
+string EventConfigChoicesAperture::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigChoicesAperture::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
 EventConfigGetISO::EventConfigGetISO() : Event(id) {}
 
 string EventConfigGetISO::name() const { return "EventConfigGetISO"; }
@@ -540,6 +637,27 @@ string EventConfigGetISO::to_string(int indent) const
 }
 
 nlohmann::json EventConfigGetISO::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventConfigGetChoicesISO::EventConfigGetChoicesISO() : Event(id) {}
+
+string EventConfigGetChoicesISO::name() const
+{
+    return "EventConfigGetChoicesISO";
+}
+
+string EventConfigGetChoicesISO::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetChoicesISO::to_json() const
 {
     return nlohmann::json(*this);
 }
@@ -576,6 +694,27 @@ string EventConfigValueISO::to_string(int indent) const
 }
 
 nlohmann::json EventConfigValueISO::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventConfigChoicesISO::EventConfigChoicesISO(vector<int32_t> iso_choices)
+    : Event(id), iso_choices(iso_choices)
+{
+}
+
+string EventConfigChoicesISO::name() const { return "EventConfigChoicesISO"; }
+
+string EventConfigChoicesISO::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigChoicesISO::to_json() const
 {
     return nlohmann::json(*this);
 }
@@ -995,6 +1134,10 @@ EventPtr jsonToEvent(const nlohmann::json& j)
             return make_shared<EventConfigGetShutterSpeed>(
                 j.get<EventConfigGetShutterSpeed>());
             break;
+        case EventConfigGetChoicesShutterSpeed::id:
+            return make_shared<EventConfigGetChoicesShutterSpeed>(
+                j.get<EventConfigGetChoicesShutterSpeed>());
+            break;
         case EventConfigSetShutterSpeed::id:
             return make_shared<EventConfigSetShutterSpeed>(
                 j.get<EventConfigSetShutterSpeed>());
@@ -1003,9 +1146,17 @@ EventPtr jsonToEvent(const nlohmann::json& j)
             return make_shared<EventConfigValueShutterSpeed>(
                 j.get<EventConfigValueShutterSpeed>());
             break;
+        case EventConfigChoicesShutterSpeed::id:
+            return make_shared<EventConfigChoicesShutterSpeed>(
+                j.get<EventConfigChoicesShutterSpeed>());
+            break;
         case EventConfigGetAperture::id:
             return make_shared<EventConfigGetAperture>(
                 j.get<EventConfigGetAperture>());
+            break;
+        case EventConfigGetChoicesAperture::id:
+            return make_shared<EventConfigGetChoicesAperture>(
+                j.get<EventConfigGetChoicesAperture>());
             break;
         case EventConfigSetAperture::id:
             return make_shared<EventConfigSetAperture>(
@@ -1015,8 +1166,16 @@ EventPtr jsonToEvent(const nlohmann::json& j)
             return make_shared<EventConfigValueAperture>(
                 j.get<EventConfigValueAperture>());
             break;
+        case EventConfigChoicesAperture::id:
+            return make_shared<EventConfigChoicesAperture>(
+                j.get<EventConfigChoicesAperture>());
+            break;
         case EventConfigGetISO::id:
             return make_shared<EventConfigGetISO>(j.get<EventConfigGetISO>());
+            break;
+        case EventConfigGetChoicesISO::id:
+            return make_shared<EventConfigGetChoicesISO>(
+                j.get<EventConfigGetChoicesISO>());
             break;
         case EventConfigSetISO::id:
             return make_shared<EventConfigSetISO>(j.get<EventConfigSetISO>());
@@ -1024,6 +1183,10 @@ EventPtr jsonToEvent(const nlohmann::json& j)
         case EventConfigValueISO::id:
             return make_shared<EventConfigValueISO>(
                 j.get<EventConfigValueISO>());
+            break;
+        case EventConfigChoicesISO::id:
+            return make_shared<EventConfigChoicesISO>(
+                j.get<EventConfigChoicesISO>());
             break;
         case EventConfigGetBattery::id:
             return make_shared<EventConfigGetBattery>(
