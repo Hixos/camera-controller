@@ -74,6 +74,11 @@ State CameraController::stateSuper(const EventPtr& ev)
             low_latency = d_ev->low_latency;
             break;
         }
+        case EventGetCameraControllerState::id:
+        {
+            getState();
+            break;
+        }
         default:
             retState = tran_super(&CameraController::Hsm_top);
             break;
@@ -128,14 +133,16 @@ State CameraController::stateConnected(const EventPtr& ev)
             catch (std::exception& e)
             {
                 LOG_ERR(slog, "Error setting capture target: {}", e.what());
-                postEvent(EventCameraError{});
+                checkConnection();
             }
+            onCameraConnected(true);
             break;
         case EventSMInit::id:
             retState = transition(&CameraController::stateReady);
             break;
         case EventSMExit::id:
             LOG_INFO(slog, "EXIT");
+            onCameraConnected(false);
             break;
         case EventCameraError::id:
             retState = transition(&CameraController::stateError);
@@ -160,9 +167,9 @@ State CameraController::stateReady(const EventPtr& ev)
             LOG_INFO(slog, "ENTRY");
             if (!low_latency)
             {
-                if (!getCommonConfig())
+                if (!getAllConfig())
                 {
-                    postEvent(EventCameraError{});
+                    checkConnection();
                 }
             }
 
@@ -172,41 +179,37 @@ State CameraController::stateReady(const EventPtr& ev)
         case EventSMExit::id:
             LOG_INFO(slog, "EXIT");
             break;
-        case EventConfigSetShutterSpeed::id:
-        case EventConfigSetAperture::id:
-        case EventConfigSetISO::id:
-        case EventConfigSetCaptureTarget::id:
-            if (!setConfig(ev))
-                retState = transition(&CameraController::stateError);
-            break;
-        case EventConfigGetShutterSpeed::id:
-        case EventConfigGetAperture::id:
-        case EventConfigGetISO::id:
-        case EventConfigGetFocalLength::id:
-        case EventConfigGetFocusMode::id:
-        case EventConfigGetLongExpNR::id:
-        case EventConfigGetVibRed::id:
-        case EventConfigGetBattery::id:
-        case EventConfigGetCaptureTarget::id:
-        case EventConfigGetChoicesShutterSpeed::id:
-        case EventConfigGetChoicesAperture::id:
-        case EventConfigGetChoicesISO::id:
-        case EventConfigGetLightMeter::id:
-            if (!getConfig(ev))
-                retState = transition(&CameraController::stateError);
-            break;
-        case EventConfigGetCommon::id:
-            if (!getCommonConfig())
-                retState = transition(&CameraController::stateError);
+        case EventConfigGetAll::id:
+            if (!getAllConfig())
+                checkConnection();
             break;
         case EventCameraCmdCapture::id:
             retState = transition(&CameraController::stateCapturing);
             break;
         default:
-            retState = tran_super(&CameraController::stateConnected);
+        {
+            retState = handleConfigGetSet(ev);
             break;
+        }
     }
     return retState;
+}
+State CameraController::handleConfigGetSet(const EventPtr& ev)
+{
+    ConfigEventHandleResult s = getConfig(ev);
+    if (s == ConfigEventHandleResult::UNHANDLED)
+        s = setConfig(ev);
+
+    switch (s)
+    {
+        case ConfigEventHandleResult::HANDLED:
+            return State::HANDLED;
+        case ConfigEventHandleResult::ERROR:
+            checkConnection();
+            return State::HANDLED;
+        default:
+            return tran_super(&CameraController::stateConnected);
+    }
 }
 
 State CameraController::stateConnectionError(const EventPtr& ev)
@@ -327,12 +330,12 @@ State CameraController::stateCapturing(const EventPtr& ev)
             {
                 LOG_ERR(slog, "Camera capture error (GPhoto): {} = {}",
                         gpe.error, gpe.what());
-                retState = transition(&CameraController::stateError);
+               checkConnection();
             }
             catch (std::exception& e)
             {
                 LOG_ERR(slog, "Camera capture error: {}", e.what());
-                retState = transition(&CameraController::stateError);
+                checkConnection();
             }
             break;
         }
@@ -377,12 +380,12 @@ State CameraController::stateDownloading(const EventPtr& ev)
             {
                 LOG_ERR(slog, "Camera download error (GPhoto): {} = {}",
                         gpe.error, gpe.what());
-                retState = transition(&CameraController::stateError);
+                checkConnection();
             }
             catch (std::exception& e)
             {
                 LOG_ERR(slog, "Camera download error: {}", e.what());
-                retState = transition(&CameraController::stateError);
+                checkConnection();
             }
             break;
         }
@@ -391,64 +394,6 @@ State CameraController::stateDownloading(const EventPtr& ev)
             break;
     }
     return retState;
-}
-
-bool CameraController::getCommonConfig()
-{
-    try
-    {
-        auto ss = camera.getShutterSpeed();
-        sEventBroker.post(
-            EventConfigValueShutterSpeed{ss.shutter_speed, ss.bulb},
-            TOPIC_CAMERA_CONFIG);
-
-        sEventBroker.post(EventConfigValueAperture{camera.getAperture()},
-                          TOPIC_CAMERA_CONFIG);
-        sEventBroker.post(EventConfigValueISO{camera.getISO()},
-                          TOPIC_CAMERA_CONFIG);
-        sEventBroker.post(EventConfigValueFocalLength{camera.getFocalLength()},
-                          TOPIC_CAMERA_CONFIG);
-        sEventBroker.post(
-            EventConfigValueCameraMode{camera.getExposureProgram()},
-            TOPIC_CAMERA_CONFIG);
-
-        // sEventBroker.post(EventConfigValueFocusMode{camera.getFocusMode()},
-        //                   TOPIC_CAMERA_CONFIG);
-        sEventBroker.post(
-            EventConfigValueLongExpNR{camera.getLongExpNR() == "On"},
-            TOPIC_CAMERA_CONFIG);
-        sEventBroker.post(EventConfigValueBattery{camera.getBatteryPercent()},
-                          TOPIC_CAMERA_CONFIG);
-
-        sEventBroker.post(
-            EventConfigChoicesShutterSpeed{
-                camera.getShutterSpeedChoices(false)},
-            TOPIC_CAMERA_CONFIG);
-        sEventBroker.post(
-            EventConfigChoicesAperture{camera.getApertureChoices()},
-            TOPIC_CAMERA_CONFIG);
-        sEventBroker.post(EventConfigChoicesISO{camera.getIsoChoices()},
-                          TOPIC_CAMERA_CONFIG);
-        float light_meter = camera.getLightMeter();
-        CameraWidgetRange::Range light_meter_range =
-            camera.getLightMeterRange();
-
-        sEventBroker.post(
-            EventConfigValueLightMeter(light_meter, light_meter_range.min,
-                                       light_meter_range.max),
-            TOPIC_CAMERA_CONFIG);
-        return true;
-    }
-    catch (gphotow::GPhotoError& gpe)
-    {
-        LOG_ERR(log, "updateConfig error (GPhoto): {} = {}", gpe.error,
-                gpe.what());
-    }
-    catch (std::exception& e)
-    {
-        LOG_ERR(log, "updateConfig error: {}", e.what());
-    }
-    return false;
 }
 
 bool CameraController::connect()
@@ -470,154 +415,41 @@ bool CameraController::connect()
     return false;
 }
 
-bool CameraController::setConfig(const EventPtr& ev)
+CameraController::ConfigEventHandleResult CameraController::setConfig(
+    const EventPtr& ev)
 {
     try
     {
-        switch (ev->getID())
+        if (config_setters.count(ev->getID()) > 0)
         {
-            case EventConfigSetShutterSpeed::id:
-            {
-                auto set_ev =
-                    dynamic_pointer_cast<const EventConfigSetShutterSpeed>(ev);
-                camera.setShutterSpeed(set_ev->shutter_speed);
-                getConfig(ev);
-                break;
-            }
-            case EventConfigSetAperture::id:
-            {
-                auto set_ev =
-                    dynamic_pointer_cast<const EventConfigSetAperture>(ev);
-                camera.setAperture(set_ev->aperture);
-                getConfig(ev);
-
-                break;
-            }
-            case EventConfigSetISO::id:
-            {
-                auto set_ev = dynamic_pointer_cast<const EventConfigSetISO>(ev);
-                camera.setISO(set_ev->iso);
-                getConfig(ev);
-
-                break;
-            }
-            case EventConfigSetCaptureTarget::id:
-            {
-                auto set_ev =
-                    dynamic_pointer_cast<const EventConfigSetCaptureTarget>(ev);
-                camera.setCaptureTarget(set_ev->target);
-                getConfig(ev);
-
-                break;
-            }
-            default:
-                LOG_ERR(log, "Unknow config setter event: {}", ev->name());
-                break;
+            config_setters.at(ev->getID())(*this, ev);
+            return ConfigEventHandleResult::HANDLED;
         }
-        return true;
+        return ConfigEventHandleResult::UNHANDLED;
     }
     catch (gphotow::GPhotoError& gpe)
     {
-        LOG_ERR(log, "Camera get config error ({}) (GPhoto): {} = {}",
+        LOG_ERR(log, "Camera set config error ({}) (GPhoto): {} = {}",
                 ev->name(), gpe.error, gpe.what());
     }
     catch (std::exception& e)
     {
-        LOG_ERR(log, "Camera get config error ({}): {}", ev->name(), e.what());
+        LOG_ERR(log, "Camera set config error ({}): {}", ev->name(), e.what());
     }
-    return false;
+    return ConfigEventHandleResult::ERROR;
 }
 
-bool CameraController::getConfig(const EventPtr& ev)
+CameraController::ConfigEventHandleResult CameraController::getConfig(
+    const EventPtr& ev)
 {
     try
     {
-        switch (ev->getID())
+        if (config_getters.count(ev->getID()) > 0)
         {
-            case EventConfigSetShutterSpeed::id:
-            case EventConfigGetShutterSpeed::id:
-            {
-                auto ss = camera.getShutterSpeed();
-
-                sEventBroker.post(
-                    EventConfigValueShutterSpeed{ss.shutter_speed, ss.bulb},
-                    TOPIC_CAMERA_CONFIG);
-                break;
-            }
-            case EventConfigGetChoicesShutterSpeed::id:
-            {
-                sEventBroker.post(
-                    EventConfigChoicesShutterSpeed{
-                        camera.getShutterSpeedChoices(false)},
-                    TOPIC_CAMERA_CONFIG);
-                break;
-            }
-            case EventConfigSetAperture::id:
-            case EventConfigGetAperture::id:
-                sEventBroker.post(
-                    EventConfigValueAperture{camera.getAperture()},
-                    TOPIC_CAMERA_CONFIG);
-                break;
-            case EventConfigGetChoicesAperture::id:
-                sEventBroker.post(
-                    EventConfigChoicesAperture{camera.getApertureChoices()},
-                    TOPIC_CAMERA_CONFIG);
-                break;
-            case EventConfigSetISO::id:
-            case EventConfigGetISO::id:
-                sEventBroker.post(EventConfigValueISO{camera.getISO()},
-                                  TOPIC_CAMERA_CONFIG);
-                break;
-            case EventConfigGetChoicesISO::id:
-                sEventBroker.post(EventConfigChoicesISO{camera.getIsoChoices()},
-                                  TOPIC_CAMERA_CONFIG);
-                break;
-            case EventConfigGetFocalLength::id:
-                sEventBroker.post(
-                    EventConfigValueFocalLength{camera.getFocalLength()},
-                    TOPIC_CAMERA_CONFIG);
-                break;
-            case EventConfigGetFocusMode::id:
-                // sEventBroker.post(
-                //     EventConfigValueFocusMode{camera.getF()},
-                //     TOPIC_CAMERA_CONFIG);
-                break;
-            case EventConfigGetLongExpNR::id:
-                sEventBroker.post(
-                    EventConfigValueLongExpNR{camera.getLongExpNR() == "On"},
-                    TOPIC_CAMERA_CONFIG);
-                break;
-            case EventConfigGetVibRed::id:
-                // sEventBroker.post(
-                //     EventConfigValueVibRed{camera.getFocalLength()},
-                //     TOPIC_CAMERA_CONFIG);
-                break;
-            case EventConfigGetBattery::id:
-                sEventBroker.post(
-                    EventConfigValueBattery{camera.getBatteryPercent()},
-                    TOPIC_CAMERA_CONFIG);
-                break;
-            case EventConfigSetCaptureTarget::id:
-            case EventConfigGetCaptureTarget::id:
-                sEventBroker.post(
-                    EventConfigValueCaptureTarget{camera.getCaptureTarget()},
-                    TOPIC_CAMERA_CONFIG);
-                break;
-            case EventConfigGetLightMeter::id:
-            {
-                float val                      = camera.getLightMeter();
-                CameraWidgetRange::Range range = camera.getLightMeterRange();
-
-                sEventBroker.post(
-                    EventConfigValueLightMeter(val, range.min, range.max),
-                    TOPIC_CAMERA_CONFIG);
-                break;
-            }
-            default:
-                LOG_ERR(log, "Unknow config getter event: {}", ev->name());
-                break;
+            config_getters.at(ev->getID())(*this);
+            return ConfigEventHandleResult::HANDLED;
         }
-        return true;
+        return ConfigEventHandleResult::UNHANDLED;
     }
     catch (gphotow::GPhotoError& gpe)
     {
@@ -627,6 +459,29 @@ bool CameraController::getConfig(const EventPtr& ev)
     catch (std::exception& e)
     {
         LOG_ERR(log, "Camera get config error ({}): {}", ev->name(), e.what());
+    }
+    return ConfigEventHandleResult::ERROR;
+}
+
+bool CameraController::getAllConfig()
+{
+    try
+    {
+        for (auto it = config_getters.begin(); it != config_getters.end(); it++)
+        {
+            it->second(*this);
+        }
+        getState();
+        return true;
+    }
+    catch (gphotow::GPhotoError& gpe)
+    {
+        LOG_ERR(log, "Camera get all config error (GPhoto): {} = {}", gpe.error,
+                gpe.what());
+    }
+    catch (std::exception& e)
+    {
+        LOG_ERR(log, "Camera get all config error: {}", e.what());
     }
     return false;
 }
@@ -634,6 +489,39 @@ bool CameraController::getConfig(const EventPtr& ev)
 void CameraController::onStateChanged(CCState state)
 {
     this->state = state;
-    sEventBroker.post(EventCameraControllerState{static_cast<uint8_t>(state)},
-                      TOPIC_CAMERA_EVENT);
+    getState();
+}
+
+void CameraController::onCameraConnected(bool connected)
+{
+    this->camera_connected = connected;
+    getState();
+}
+
+void CameraController::getState()
+{
+    EventCameraControllerState e;
+    e.camera_connected = camera_connected;
+    e.state            = state_names.at(state);
+
+    sEventBroker.post(std::move(e), TOPIC_CAMERA_CONFIG);
+}
+
+void CameraController::checkConnection()
+{
+    try
+    {
+        camera.getShutterSpeed();
+        return;
+    }
+    catch (gphotow::GPhotoError& gpe)
+    {
+        LOG_ERR(log, "Error communicating with camera (GPhoto): {} = {}",
+                gpe.error, gpe.what());
+    }
+    catch (std::exception& e)
+    {
+        LOG_ERR(log, "Error communicating with camera: {}", e.what());
+    }
+    postEvent(EventCameraError{});
 }
