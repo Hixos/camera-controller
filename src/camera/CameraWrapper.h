@@ -258,6 +258,18 @@ public:
     string getExposureProgram();
 
     /**
+     * @brief Get focus mode
+     * @throw GPhotoError
+     */
+    string getFocusMode();
+
+    /**
+     * @brief Get focus mode
+     * @throw GPhotoError
+     */
+    void nextFocusMode();
+
+    /**
      * @brief Returns the current trigger mode.
      * @throw GPhotoError
      */
@@ -269,13 +281,12 @@ public:
      */
     int getFocalLength();
 
-    string getLongExpNR();
+    bool getLongExpNR();
+    void setLongExpNR(bool nr);
 
-    // /**
-    //  * @brief Sets the trigger mode
-    //  * @throw GPhotoError
-    //  */
-    // void setTriggerMode(string mode);
+    bool getAutoISO();
+
+    void setAutoISO(bool auto_iso);
 
     /**
      * @brief Sets the Capture Target
@@ -291,31 +302,6 @@ public:
 
     float getLightMeter();
     CameraWidgetRange::Range getLightMeterRange();
-
-    // /**
-    //  * @brief Lists all the available trigger modes
-    //  * @throw GPhotoError
-    //  */
-    // vector<string> listTriggerModes();
-
-    // /**
-    //  * @brief Returns the number of captures in a single burst
-    //  * @throw GPhotoError
-    //  * @return Number of captures in a burst
-    //  */
-    // int getBurstCount();
-
-    // /**
-    //  * @brief Set the number of captures in a burst
-    //  * @throw GPhotoError
-    //  */
-    // void setBurstCount(int count);
-
-    // /**
-    //  * @brief Returns the maximum number of captures in a single burst
-    //  * @throw GPhotoError
-    //  */
-    // int getMaxBurstCount();
 
     CameraPath capture();
     CameraPath cameraCapture();

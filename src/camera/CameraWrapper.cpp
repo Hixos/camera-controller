@@ -144,7 +144,7 @@ CameraWrapper::ShutterSpeedConfig CameraWrapper::getShutterSpeed()
     CameraWidgetRadio widget{*this, CONFIG_SHUTTER_SPEED};
 
     vector<int32_t> choices = getShutterSpeedChoices(widget);
-    unsigned int choice          = widget.getID();
+    unsigned int choice     = widget.getID();
     if (choice == bulb_choice)
     {
         return {.shutter_speed = bulb_shutter_speed, .bulb = true};
@@ -183,7 +183,7 @@ vector<int32_t> CameraWrapper::getShutterSpeedChoices(bool include_bulb)
 }
 
 vector<int32_t> CameraWrapper::getShutterSpeedChoices(CameraWidgetRadio& widget,
-                                             bool include_bulb)
+                                                      bool include_bulb)
 {
     return choicesStringToInt(
         widget, &CameraStringConversion::exposureToMicroseconds, include_bulb);
@@ -194,7 +194,7 @@ int32_t CameraWrapper::getAperture()
     CameraWidgetRadio widget{*this, CONFIG_APERTURE};
 
     vector<int32_t> choices = getApertureChoices(widget);
-    unsigned int id     = widget.getID();
+    unsigned int id         = widget.getID();
 
     return choices.at(id);
 }
@@ -225,7 +225,7 @@ int32_t CameraWrapper::getISO()
     CameraWidgetRadio widget{*this, CONFIG_ISO};
 
     vector<int32_t> choices = getIsoChoices(widget);
-    unsigned int id     = widget.getID();
+    unsigned int id         = widget.getID();
 
     return choices.at(id);
 }
@@ -278,11 +278,22 @@ int CameraWrapper::getFocalLength()
     return int(widget.getValue());
 }
 
-string CameraWrapper::getLongExpNR()
+bool CameraWrapper::getLongExpNR()
 {
     CameraWidgetRadio widget{*this, CONFIG_LONG_EXP_NR};
-    return widget.getValue();
+    return widget.getValue() == "On";
 }
+
+void CameraWrapper::setLongExpNR(bool nr){
+    CameraWidgetRadio widget{*this, CONFIG_LONG_EXP_NR};
+    if(nr)
+        widget.setValue("On");
+    else
+        widget.setValue("Off");
+    widget.apply();
+}   
+
+
 
 // void CameraWrapper::setTriggerMode(string mode)
 // {
@@ -319,31 +330,44 @@ float CameraWrapper::getLightMeter()
     return widget.getValue();
 }
 
- CameraWidgetRange::Range CameraWrapper::getLightMeterRange()
+CameraWidgetRange::Range CameraWrapper::getLightMeterRange()
 {
     CameraWidgetRange widget{*this, CONFIG_LIGHT_METER};
     return widget.getRange();
 }
 
-// int CameraWrapper::getBurstCount()
-// {
-//     CameraWidgetText widget{*this, CONFIG_BURST_COUNT};
-//     return std::stoi(widget.getValue());
-// }
+string CameraWrapper::getFocusMode()
+{
+    CameraWidgetRadio widget{*this, CONFIG_FOCUS_MODE};
+    return widget.getValue() == "Manual" ? "MF" : widget.getValue();
+}
 
-// void CameraWrapper::setBurstCount(int burst)
-// {
-//     CameraWidgetText widget{*this, CONFIG_BURST_COUNT};
-//     widget.setValue(std::to_string(burst));
-//     widget.apply();
-// }
+void CameraWrapper::nextFocusMode()
+{
+    CameraWidgetRadio widget{*this, CONFIG_FOCUS_MODE};
+    size_t num_choices =  widget.getChoices().size();
 
-// int CameraWrapper::getMaxBurstCount()
-// {
-//     CameraWidgetText widget{*this, CONFIG_BURST_COUNT};
-//     vector<string> choices = widget.getAvailableValues();
-//     return std::stoi(choices[choices.size() - 1]);
-// }
+    unsigned int id = (widget.getID() + 1) % num_choices;
+    
+    widget.setValue(id);
+    widget.apply();
+}
+
+bool CameraWrapper::getAutoISO()
+{
+    CameraWidgetRadio widget{*this, CONFIG_AUTO_ISO};
+    return widget.getValue() == "On";
+}
+
+void CameraWrapper::setAutoISO(bool auto_iso){
+    CameraWidgetRadio widget{*this, CONFIG_AUTO_ISO};
+    if(auto_iso)
+        widget.setValue("On");
+    else
+        widget.setValue("Off");
+    widget.apply();
+}   
+
 
 void CameraWrapper::bulb(int value)
 {
@@ -388,7 +412,7 @@ CameraPath CameraWrapper::bulbCapture(int exposure_time, milliseconds timeout)
 
     // If long exposuire NR is on camera will wait additional exposure_time to
     // caputere noise data
-    if (getLongExpNR() == "On")
+    if (getLongExpNR())
     {
         timeout += duration_cast<milliseconds>(microseconds(exposure_time));
         LOG_DEBUG(log,
@@ -553,9 +577,9 @@ out:
     }
 }
 
-vector<int32_t> CameraWrapper::choicesStringToInt(CameraWidgetRadio& widget,
-                                              function<int(string)> conv_func,
-                                              bool include_invalid)
+vector<int32_t> CameraWrapper::choicesStringToInt(
+    CameraWidgetRadio& widget, function<int(string)> conv_func,
+    bool include_invalid)
 {
     vector<string> choices = widget.getChoices();
 
@@ -589,7 +613,7 @@ void CameraWrapper::updateBulbConfig()
 {
     CameraWidgetRadio widget{*this, CONFIG_SHUTTER_SPEED};
     vector<string> strings = widget.getChoices();
-    vector<int32_t> values     = getShutterSpeedChoices(widget);
+    vector<int32_t> values = getShutterSpeedChoices(widget);
 
     max_shutter_speed = *std::max_element(values.begin(), values.end());
     for (unsigned int i = 0; i < strings.size(); ++i)

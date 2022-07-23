@@ -33,9 +33,11 @@ EventCameraCaptureDone
     string file
 }
 
+EventGetCameraControllerState
 EventCameraControllerState
 {
-    uint8_t state
+    string state
+    bool camera_connected
 }
 
 
@@ -99,18 +101,27 @@ EventConfigValueFocalLength
 }
 
 EventConfigGetFocusMode
+EventConfigNextFocusMode
 EventConfigValueFocusMode
 {
     string focus_mode 
 }
 
 EventConfigGetLongExpNR
+EventConfigSetLongExpNR
+{
+    bool long_exp_nr
+}
 EventConfigValueLongExpNR
 {
     bool long_exp_nr
 }
 
 EventConfigGetVibRed
+EventConfigSetVibRed
+{
+    bool vr
+}
 EventConfigValueVibRed
 {
     bool vr
@@ -126,10 +137,10 @@ EventConfigValueCaptureTarget
     string target
 }
 
-EventConfigGetCameraMode
-EventConfigValueCameraMode
+EventConfigGetExposureProgram
+EventConfigValueExposureProgram
 {
-    string target
+    string exposure_program
 }
 
 EventConfigGetLightMeter
@@ -140,4 +151,14 @@ EventConfigValueLightMeter
     float max
 }
 
-EventConfigGetCommon
+EventConfigGetAutoISO
+EventConfigSetAutoISO
+{
+    bool auto_iso
+}
+EventConfigValueAutoISO
+{
+    bool auto_iso
+}
+
+EventConfigGetAll

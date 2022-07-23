@@ -26,7 +26,7 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-23 13:13:52.955652
+// Autogen date:    2022-07-23 18:42:13.336726
 
 #include "Events.h"
 
@@ -371,8 +371,30 @@ nlohmann::json EventCameraCaptureDone::to_json() const
     return nlohmann::json(*this);
 }
 
-EventCameraControllerState::EventCameraControllerState(uint8_t state)
-    : Event(id), state(state)
+EventGetCameraControllerState::EventGetCameraControllerState() : Event(id) {}
+
+string EventGetCameraControllerState::name() const
+{
+    return "EventGetCameraControllerState";
+}
+
+string EventGetCameraControllerState::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventGetCameraControllerState::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventCameraControllerState::EventCameraControllerState(string state,
+                                                       bool camera_connected)
+    : Event(id), state(state), camera_connected(camera_connected)
 {
 }
 
@@ -827,6 +849,27 @@ nlohmann::json EventConfigGetFocusMode::to_json() const
     return nlohmann::json(*this);
 }
 
+EventConfigNextFocusMode::EventConfigNextFocusMode() : Event(id) {}
+
+string EventConfigNextFocusMode::name() const
+{
+    return "EventConfigNextFocusMode";
+}
+
+string EventConfigNextFocusMode::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigNextFocusMode::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
 EventConfigValueFocusMode::EventConfigValueFocusMode(string focus_mode)
     : Event(id), focus_mode(focus_mode)
 {
@@ -872,6 +915,30 @@ nlohmann::json EventConfigGetLongExpNR::to_json() const
     return nlohmann::json(*this);
 }
 
+EventConfigSetLongExpNR::EventConfigSetLongExpNR(bool long_exp_nr)
+    : Event(id), long_exp_nr(long_exp_nr)
+{
+}
+
+string EventConfigSetLongExpNR::name() const
+{
+    return "EventConfigSetLongExpNR";
+}
+
+string EventConfigSetLongExpNR::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigSetLongExpNR::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
 EventConfigValueLongExpNR::EventConfigValueLongExpNR(bool long_exp_nr)
     : Event(id), long_exp_nr(long_exp_nr)
 {
@@ -910,6 +977,24 @@ string EventConfigGetVibRed::to_string(int indent) const
 }
 
 nlohmann::json EventConfigGetVibRed::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventConfigSetVibRed::EventConfigSetVibRed(bool vr) : Event(id), vr(vr) {}
+
+string EventConfigSetVibRed::name() const { return "EventConfigSetVibRed"; }
+
+string EventConfigSetVibRed::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigSetVibRed::to_json() const
 {
     return nlohmann::json(*this);
 }
@@ -1001,14 +1086,14 @@ nlohmann::json EventConfigValueCaptureTarget::to_json() const
     return nlohmann::json(*this);
 }
 
-EventConfigGetCameraMode::EventConfigGetCameraMode() : Event(id) {}
+EventConfigGetExposureProgram::EventConfigGetExposureProgram() : Event(id) {}
 
-string EventConfigGetCameraMode::name() const
+string EventConfigGetExposureProgram::name() const
 {
-    return "EventConfigGetCameraMode";
+    return "EventConfigGetExposureProgram";
 }
 
-string EventConfigGetCameraMode::to_string(int indent) const
+string EventConfigGetExposureProgram::to_string(int indent) const
 {
     nlohmann::json j = to_json();
     if (indent < 0)
@@ -1017,22 +1102,23 @@ string EventConfigGetCameraMode::to_string(int indent) const
         return fmt::format("{}\n{}", name(), j.dump(indent));
 }
 
-nlohmann::json EventConfigGetCameraMode::to_json() const
+nlohmann::json EventConfigGetExposureProgram::to_json() const
 {
     return nlohmann::json(*this);
 }
 
-EventConfigValueCameraMode::EventConfigValueCameraMode(string target)
-    : Event(id), target(target)
+EventConfigValueExposureProgram::EventConfigValueExposureProgram(
+    string exposure_program)
+    : Event(id), exposure_program(exposure_program)
 {
 }
 
-string EventConfigValueCameraMode::name() const
+string EventConfigValueExposureProgram::name() const
 {
-    return "EventConfigValueCameraMode";
+    return "EventConfigValueExposureProgram";
 }
 
-string EventConfigValueCameraMode::to_string(int indent) const
+string EventConfigValueExposureProgram::to_string(int indent) const
 {
     nlohmann::json j = to_json();
     if (indent < 0)
@@ -1041,7 +1127,7 @@ string EventConfigValueCameraMode::to_string(int indent) const
         return fmt::format("{}\n{}", name(), j.dump(indent));
 }
 
-nlohmann::json EventConfigValueCameraMode::to_json() const
+nlohmann::json EventConfigValueExposureProgram::to_json() const
 {
     return nlohmann::json(*this);
 }
@@ -1092,11 +1178,11 @@ nlohmann::json EventConfigValueLightMeter::to_json() const
     return nlohmann::json(*this);
 }
 
-EventConfigGetCommon::EventConfigGetCommon() : Event(id) {}
+EventConfigGetAutoISO::EventConfigGetAutoISO() : Event(id) {}
 
-string EventConfigGetCommon::name() const { return "EventConfigGetCommon"; }
+string EventConfigGetAutoISO::name() const { return "EventConfigGetAutoISO"; }
 
-string EventConfigGetCommon::to_string(int indent) const
+string EventConfigGetAutoISO::to_string(int indent) const
 {
     nlohmann::json j = to_json();
     if (indent < 0)
@@ -1105,7 +1191,70 @@ string EventConfigGetCommon::to_string(int indent) const
         return fmt::format("{}\n{}", name(), j.dump(indent));
 }
 
-nlohmann::json EventConfigGetCommon::to_json() const
+nlohmann::json EventConfigGetAutoISO::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventConfigSetAutoISO::EventConfigSetAutoISO(bool auto_iso)
+    : Event(id), auto_iso(auto_iso)
+{
+}
+
+string EventConfigSetAutoISO::name() const { return "EventConfigSetAutoISO"; }
+
+string EventConfigSetAutoISO::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigSetAutoISO::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventConfigValueAutoISO::EventConfigValueAutoISO(bool auto_iso)
+    : Event(id), auto_iso(auto_iso)
+{
+}
+
+string EventConfigValueAutoISO::name() const
+{
+    return "EventConfigValueAutoISO";
+}
+
+string EventConfigValueAutoISO::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigValueAutoISO::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventConfigGetAll::EventConfigGetAll() : Event(id) {}
+
+string EventConfigGetAll::name() const { return "EventConfigGetAll"; }
+
+string EventConfigGetAll::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventConfigGetAll::to_json() const
 {
     return nlohmann::json(*this);
 }
@@ -1171,6 +1320,10 @@ EventPtr jsonToEvent(const nlohmann::json& j)
         case EventCameraCaptureDone::id:
             return make_shared<EventCameraCaptureDone>(
                 j.get<EventCameraCaptureDone>());
+            break;
+        case EventGetCameraControllerState::id:
+            return make_shared<EventGetCameraControllerState>(
+                j.get<EventGetCameraControllerState>());
             break;
         case EventCameraControllerState::id:
             return make_shared<EventCameraControllerState>(
@@ -1254,6 +1407,10 @@ EventPtr jsonToEvent(const nlohmann::json& j)
             return make_shared<EventConfigGetFocusMode>(
                 j.get<EventConfigGetFocusMode>());
             break;
+        case EventConfigNextFocusMode::id:
+            return make_shared<EventConfigNextFocusMode>(
+                j.get<EventConfigNextFocusMode>());
+            break;
         case EventConfigValueFocusMode::id:
             return make_shared<EventConfigValueFocusMode>(
                 j.get<EventConfigValueFocusMode>());
@@ -1262,6 +1419,10 @@ EventPtr jsonToEvent(const nlohmann::json& j)
             return make_shared<EventConfigGetLongExpNR>(
                 j.get<EventConfigGetLongExpNR>());
             break;
+        case EventConfigSetLongExpNR::id:
+            return make_shared<EventConfigSetLongExpNR>(
+                j.get<EventConfigSetLongExpNR>());
+            break;
         case EventConfigValueLongExpNR::id:
             return make_shared<EventConfigValueLongExpNR>(
                 j.get<EventConfigValueLongExpNR>());
@@ -1269,6 +1430,10 @@ EventPtr jsonToEvent(const nlohmann::json& j)
         case EventConfigGetVibRed::id:
             return make_shared<EventConfigGetVibRed>(
                 j.get<EventConfigGetVibRed>());
+            break;
+        case EventConfigSetVibRed::id:
+            return make_shared<EventConfigSetVibRed>(
+                j.get<EventConfigSetVibRed>());
             break;
         case EventConfigValueVibRed::id:
             return make_shared<EventConfigValueVibRed>(
@@ -1286,13 +1451,13 @@ EventPtr jsonToEvent(const nlohmann::json& j)
             return make_shared<EventConfigValueCaptureTarget>(
                 j.get<EventConfigValueCaptureTarget>());
             break;
-        case EventConfigGetCameraMode::id:
-            return make_shared<EventConfigGetCameraMode>(
-                j.get<EventConfigGetCameraMode>());
+        case EventConfigGetExposureProgram::id:
+            return make_shared<EventConfigGetExposureProgram>(
+                j.get<EventConfigGetExposureProgram>());
             break;
-        case EventConfigValueCameraMode::id:
-            return make_shared<EventConfigValueCameraMode>(
-                j.get<EventConfigValueCameraMode>());
+        case EventConfigValueExposureProgram::id:
+            return make_shared<EventConfigValueExposureProgram>(
+                j.get<EventConfigValueExposureProgram>());
             break;
         case EventConfigGetLightMeter::id:
             return make_shared<EventConfigGetLightMeter>(
@@ -1302,9 +1467,20 @@ EventPtr jsonToEvent(const nlohmann::json& j)
             return make_shared<EventConfigValueLightMeter>(
                 j.get<EventConfigValueLightMeter>());
             break;
-        case EventConfigGetCommon::id:
-            return make_shared<EventConfigGetCommon>(
-                j.get<EventConfigGetCommon>());
+        case EventConfigGetAutoISO::id:
+            return make_shared<EventConfigGetAutoISO>(
+                j.get<EventConfigGetAutoISO>());
+            break;
+        case EventConfigSetAutoISO::id:
+            return make_shared<EventConfigSetAutoISO>(
+                j.get<EventConfigSetAutoISO>());
+            break;
+        case EventConfigValueAutoISO::id:
+            return make_shared<EventConfigValueAutoISO>(
+                j.get<EventConfigValueAutoISO>());
+            break;
+        case EventConfigGetAll::id:
+            return make_shared<EventConfigGetAll>(j.get<EventConfigGetAll>());
             break;
 
         default:

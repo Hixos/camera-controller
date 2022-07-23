@@ -26,7 +26,7 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-23 13:13:52.955652
+// Autogen date:    2022-07-23 18:42:13.336726
 
 #include <cassert>
 #include <cstdint>
@@ -287,12 +287,11 @@ struct EventCameraCaptureDone : public Event
                                        file);
 };
 
-struct EventCameraControllerState : public Event
+struct EventGetCameraControllerState : public Event
 {
     static constexpr uint16_t id = 25;
 
-    EventCameraControllerState() : Event(id){};
-    EventCameraControllerState(uint8_t state);
+    EventGetCameraControllerState();
 
     string name() const override;
 
@@ -300,14 +299,32 @@ struct EventCameraControllerState : public Event
 
     nlohmann::json to_json() const override;
 
-    uint8_t state;
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventGetCameraControllerState);
+};
 
-    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventCameraControllerState, state);
+struct EventCameraControllerState : public Event
+{
+    static constexpr uint16_t id = 26;
+
+    EventCameraControllerState() : Event(id){};
+    EventCameraControllerState(string state, bool camera_connected);
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    string state;
+    bool camera_connected;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventCameraControllerState, state,
+                                       camera_connected);
 };
 
 struct EventConfigGetShutterSpeed : public Event
 {
-    static constexpr uint16_t id = 26;
+    static constexpr uint16_t id = 27;
 
     EventConfigGetShutterSpeed();
 
@@ -322,7 +339,7 @@ struct EventConfigGetShutterSpeed : public Event
 
 struct EventConfigGetChoicesShutterSpeed : public Event
 {
-    static constexpr uint16_t id = 27;
+    static constexpr uint16_t id = 28;
 
     EventConfigGetChoicesShutterSpeed();
 
@@ -338,7 +355,7 @@ struct EventConfigGetChoicesShutterSpeed : public Event
 
 struct EventConfigSetShutterSpeed : public Event
 {
-    static constexpr uint16_t id = 28;
+    static constexpr uint16_t id = 29;
 
     EventConfigSetShutterSpeed() : Event(id){};
     EventConfigSetShutterSpeed(int32_t shutter_speed);
@@ -357,7 +374,7 @@ struct EventConfigSetShutterSpeed : public Event
 
 struct EventConfigValueShutterSpeed : public Event
 {
-    static constexpr uint16_t id = 29;
+    static constexpr uint16_t id = 30;
 
     EventConfigValueShutterSpeed() : Event(id){};
     EventConfigValueShutterSpeed(int32_t shutter_speed, bool bulb);
@@ -377,7 +394,7 @@ struct EventConfigValueShutterSpeed : public Event
 
 struct EventConfigChoicesShutterSpeed : public Event
 {
-    static constexpr uint16_t id = 30;
+    static constexpr uint16_t id = 31;
 
     EventConfigChoicesShutterSpeed() : Event(id){};
     EventConfigChoicesShutterSpeed(vector<int32_t> shutter_speed_choices);
@@ -396,7 +413,7 @@ struct EventConfigChoicesShutterSpeed : public Event
 
 struct EventConfigGetAperture : public Event
 {
-    static constexpr uint16_t id = 31;
+    static constexpr uint16_t id = 32;
 
     EventConfigGetAperture();
 
@@ -411,7 +428,7 @@ struct EventConfigGetAperture : public Event
 
 struct EventConfigGetChoicesAperture : public Event
 {
-    static constexpr uint16_t id = 32;
+    static constexpr uint16_t id = 33;
 
     EventConfigGetChoicesAperture();
 
@@ -426,7 +443,7 @@ struct EventConfigGetChoicesAperture : public Event
 
 struct EventConfigSetAperture : public Event
 {
-    static constexpr uint16_t id = 33;
+    static constexpr uint16_t id = 34;
 
     EventConfigSetAperture() : Event(id){};
     EventConfigSetAperture(int32_t aperture);
@@ -444,7 +461,7 @@ struct EventConfigSetAperture : public Event
 
 struct EventConfigValueAperture : public Event
 {
-    static constexpr uint16_t id = 34;
+    static constexpr uint16_t id = 35;
 
     EventConfigValueAperture() : Event(id){};
     EventConfigValueAperture(int32_t aperture);
@@ -462,7 +479,7 @@ struct EventConfigValueAperture : public Event
 
 struct EventConfigChoicesAperture : public Event
 {
-    static constexpr uint16_t id = 35;
+    static constexpr uint16_t id = 36;
 
     EventConfigChoicesAperture() : Event(id){};
     EventConfigChoicesAperture(vector<int32_t> aperture_choices);
@@ -481,7 +498,7 @@ struct EventConfigChoicesAperture : public Event
 
 struct EventConfigGetISO : public Event
 {
-    static constexpr uint16_t id = 36;
+    static constexpr uint16_t id = 37;
 
     EventConfigGetISO();
 
@@ -496,7 +513,7 @@ struct EventConfigGetISO : public Event
 
 struct EventConfigGetChoicesISO : public Event
 {
-    static constexpr uint16_t id = 37;
+    static constexpr uint16_t id = 38;
 
     EventConfigGetChoicesISO();
 
@@ -511,7 +528,7 @@ struct EventConfigGetChoicesISO : public Event
 
 struct EventConfigSetISO : public Event
 {
-    static constexpr uint16_t id = 38;
+    static constexpr uint16_t id = 39;
 
     EventConfigSetISO() : Event(id){};
     EventConfigSetISO(int32_t iso);
@@ -529,7 +546,7 @@ struct EventConfigSetISO : public Event
 
 struct EventConfigValueISO : public Event
 {
-    static constexpr uint16_t id = 39;
+    static constexpr uint16_t id = 40;
 
     EventConfigValueISO() : Event(id){};
     EventConfigValueISO(int32_t iso);
@@ -547,7 +564,7 @@ struct EventConfigValueISO : public Event
 
 struct EventConfigChoicesISO : public Event
 {
-    static constexpr uint16_t id = 40;
+    static constexpr uint16_t id = 41;
 
     EventConfigChoicesISO() : Event(id){};
     EventConfigChoicesISO(vector<int32_t> iso_choices);
@@ -565,7 +582,7 @@ struct EventConfigChoicesISO : public Event
 
 struct EventConfigGetBattery : public Event
 {
-    static constexpr uint16_t id = 41;
+    static constexpr uint16_t id = 42;
 
     EventConfigGetBattery();
 
@@ -580,7 +597,7 @@ struct EventConfigGetBattery : public Event
 
 struct EventConfigValueBattery : public Event
 {
-    static constexpr uint16_t id = 42;
+    static constexpr uint16_t id = 43;
 
     EventConfigValueBattery() : Event(id){};
     EventConfigValueBattery(int32_t battery);
@@ -598,7 +615,7 @@ struct EventConfigValueBattery : public Event
 
 struct EventConfigGetFocalLength : public Event
 {
-    static constexpr uint16_t id = 43;
+    static constexpr uint16_t id = 44;
 
     EventConfigGetFocalLength();
 
@@ -613,7 +630,7 @@ struct EventConfigGetFocalLength : public Event
 
 struct EventConfigValueFocalLength : public Event
 {
-    static constexpr uint16_t id = 44;
+    static constexpr uint16_t id = 45;
 
     EventConfigValueFocalLength() : Event(id){};
     EventConfigValueFocalLength(int32_t focal_length);
@@ -632,7 +649,7 @@ struct EventConfigValueFocalLength : public Event
 
 struct EventConfigGetFocusMode : public Event
 {
-    static constexpr uint16_t id = 45;
+    static constexpr uint16_t id = 46;
 
     EventConfigGetFocusMode();
 
@@ -645,9 +662,24 @@ struct EventConfigGetFocusMode : public Event
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetFocusMode);
 };
 
+struct EventConfigNextFocusMode : public Event
+{
+    static constexpr uint16_t id = 47;
+
+    EventConfigNextFocusMode();
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigNextFocusMode);
+};
+
 struct EventConfigValueFocusMode : public Event
 {
-    static constexpr uint16_t id = 46;
+    static constexpr uint16_t id = 48;
 
     EventConfigValueFocusMode() : Event(id){};
     EventConfigValueFocusMode(string focus_mode);
@@ -665,7 +697,7 @@ struct EventConfigValueFocusMode : public Event
 
 struct EventConfigGetLongExpNR : public Event
 {
-    static constexpr uint16_t id = 47;
+    static constexpr uint16_t id = 49;
 
     EventConfigGetLongExpNR();
 
@@ -678,9 +710,27 @@ struct EventConfigGetLongExpNR : public Event
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetLongExpNR);
 };
 
+struct EventConfigSetLongExpNR : public Event
+{
+    static constexpr uint16_t id = 50;
+
+    EventConfigSetLongExpNR() : Event(id){};
+    EventConfigSetLongExpNR(bool long_exp_nr);
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    bool long_exp_nr;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventConfigSetLongExpNR, long_exp_nr);
+};
+
 struct EventConfigValueLongExpNR : public Event
 {
-    static constexpr uint16_t id = 48;
+    static constexpr uint16_t id = 51;
 
     EventConfigValueLongExpNR() : Event(id){};
     EventConfigValueLongExpNR(bool long_exp_nr);
@@ -698,7 +748,7 @@ struct EventConfigValueLongExpNR : public Event
 
 struct EventConfigGetVibRed : public Event
 {
-    static constexpr uint16_t id = 49;
+    static constexpr uint16_t id = 52;
 
     EventConfigGetVibRed();
 
@@ -711,9 +761,27 @@ struct EventConfigGetVibRed : public Event
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetVibRed);
 };
 
+struct EventConfigSetVibRed : public Event
+{
+    static constexpr uint16_t id = 53;
+
+    EventConfigSetVibRed() : Event(id){};
+    EventConfigSetVibRed(bool vr);
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    bool vr;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventConfigSetVibRed, vr);
+};
+
 struct EventConfigValueVibRed : public Event
 {
-    static constexpr uint16_t id = 50;
+    static constexpr uint16_t id = 54;
 
     EventConfigValueVibRed() : Event(id){};
     EventConfigValueVibRed(bool vr);
@@ -731,7 +799,7 @@ struct EventConfigValueVibRed : public Event
 
 struct EventConfigGetCaptureTarget : public Event
 {
-    static constexpr uint16_t id = 51;
+    static constexpr uint16_t id = 55;
 
     EventConfigGetCaptureTarget();
 
@@ -746,7 +814,7 @@ struct EventConfigGetCaptureTarget : public Event
 
 struct EventConfigSetCaptureTarget : public Event
 {
-    static constexpr uint16_t id = 52;
+    static constexpr uint16_t id = 56;
 
     EventConfigSetCaptureTarget() : Event(id){};
     EventConfigSetCaptureTarget(string target);
@@ -764,7 +832,7 @@ struct EventConfigSetCaptureTarget : public Event
 
 struct EventConfigValueCaptureTarget : public Event
 {
-    static constexpr uint16_t id = 53;
+    static constexpr uint16_t id = 57;
 
     EventConfigValueCaptureTarget() : Event(id){};
     EventConfigValueCaptureTarget(string target);
@@ -780,11 +848,11 @@ struct EventConfigValueCaptureTarget : public Event
     JSON_EVENT_SERIALIZATION_INTRUSIVE(EventConfigValueCaptureTarget, target);
 };
 
-struct EventConfigGetCameraMode : public Event
+struct EventConfigGetExposureProgram : public Event
 {
-    static constexpr uint16_t id = 54;
+    static constexpr uint16_t id = 58;
 
-    EventConfigGetCameraMode();
+    EventConfigGetExposureProgram();
 
     string name() const override;
 
@@ -792,15 +860,15 @@ struct EventConfigGetCameraMode : public Event
 
     nlohmann::json to_json() const override;
 
-    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetCameraMode);
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetExposureProgram);
 };
 
-struct EventConfigValueCameraMode : public Event
+struct EventConfigValueExposureProgram : public Event
 {
-    static constexpr uint16_t id = 55;
+    static constexpr uint16_t id = 59;
 
-    EventConfigValueCameraMode() : Event(id){};
-    EventConfigValueCameraMode(string target);
+    EventConfigValueExposureProgram() : Event(id){};
+    EventConfigValueExposureProgram(string exposure_program);
 
     string name() const override;
 
@@ -808,14 +876,15 @@ struct EventConfigValueCameraMode : public Event
 
     nlohmann::json to_json() const override;
 
-    string target;
+    string exposure_program;
 
-    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventConfigValueCameraMode, target);
+    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventConfigValueExposureProgram,
+                                       exposure_program);
 };
 
 struct EventConfigGetLightMeter : public Event
 {
-    static constexpr uint16_t id = 56;
+    static constexpr uint16_t id = 60;
 
     EventConfigGetLightMeter();
 
@@ -830,7 +899,7 @@ struct EventConfigGetLightMeter : public Event
 
 struct EventConfigValueLightMeter : public Event
 {
-    static constexpr uint16_t id = 57;
+    static constexpr uint16_t id = 61;
 
     EventConfigValueLightMeter() : Event(id){};
     EventConfigValueLightMeter(float light_meter, float min, float max);
@@ -849,11 +918,11 @@ struct EventConfigValueLightMeter : public Event
                                        min, max);
 };
 
-struct EventConfigGetCommon : public Event
+struct EventConfigGetAutoISO : public Event
 {
-    static constexpr uint16_t id = 58;
+    static constexpr uint16_t id = 62;
 
-    EventConfigGetCommon();
+    EventConfigGetAutoISO();
 
     string name() const override;
 
@@ -861,5 +930,56 @@ struct EventConfigGetCommon : public Event
 
     nlohmann::json to_json() const override;
 
-    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetCommon);
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetAutoISO);
+};
+
+struct EventConfigSetAutoISO : public Event
+{
+    static constexpr uint16_t id = 63;
+
+    EventConfigSetAutoISO() : Event(id){};
+    EventConfigSetAutoISO(bool auto_iso);
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    bool auto_iso;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventConfigSetAutoISO, auto_iso);
+};
+
+struct EventConfigValueAutoISO : public Event
+{
+    static constexpr uint16_t id = 64;
+
+    EventConfigValueAutoISO() : Event(id){};
+    EventConfigValueAutoISO(bool auto_iso);
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    bool auto_iso;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventConfigValueAutoISO, auto_iso);
+};
+
+struct EventConfigGetAll : public Event
+{
+    static constexpr uint16_t id = 65;
+
+    EventConfigGetAll();
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetAll);
 };
