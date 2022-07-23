@@ -26,8 +26,8 @@
 #include <map>
 #include <string>
 
-#include "camera/CameraWrapper.h"
 #include "Events.h"
+#include "camera/CameraWrapper.h"
 #include "events/EventBroker.h"
 
 using scn::scan;
@@ -66,6 +66,20 @@ public:
         return false;
     }
 
+    static bool getChoices(string cmd)
+    {
+        string config;
+        if (auto res = scan(cmd, "{}", config))
+        {
+            if (config_choices.count(config))
+            {
+                return config_choices.at(config)();
+            }
+        }
+
+        return false;
+    }
+
     static bool setConfig(string cmd)
     {
         string config;
@@ -84,10 +98,12 @@ private:
     static const map<string, function<bool(string)>> actions;
     static const map<string, function<bool()>> config_getters;
     static const map<string, function<bool(string)>> config_setters;
+    static const map<string, function<bool()>> config_choices;
 };
 
 const map<string, function<bool(string)>> CameraCLI::actions{
     {"get", &CameraCLI::getConfig},
+    {"choices", &CameraCLI::getChoices},
     {"set", &CameraCLI::setConfig},
     {"low_latency",
      [](string cmd) {
@@ -133,6 +149,11 @@ const map<string, function<bool(string)>> CameraCLI::actions{
 };
 
 const map<string, function<bool()>> CameraCLI::config_getters{
+    {"common",
+     []() {
+         sBroker.post(EventConfigGetCommon{}, TOPIC_CAMERA_CMD);
+         return true;
+     }},
     {"shutter_speed",
      []() {
          sBroker.post(EventConfigGetShutterSpeed{}, TOPIC_CAMERA_CMD);
@@ -165,6 +186,22 @@ const map<string, function<bool()>> CameraCLI::config_getters{
      }},
     {"long_exp_nr", []() {
          sBroker.post(EventConfigGetLongExpNR{}, TOPIC_CAMERA_CMD);
+         return true;
+     }}};
+
+const map<string, function<bool()>> CameraCLI::config_choices{
+    {"shutter_speed",
+     []() {
+         sBroker.post(EventConfigGetChoicesShutterSpeed{}, TOPIC_CAMERA_CMD);
+         return true;
+     }},
+    {"aperture",
+     []() {
+         sBroker.post(EventConfigGetChoicesAperture{}, TOPIC_CAMERA_CMD);
+         return true;
+     }},
+    {"iso", []() {
+         sBroker.post(EventConfigGetChoicesISO{}, TOPIC_CAMERA_CMD);
          return true;
      }}};
 
@@ -215,6 +252,53 @@ const map<string, function<bool(string)>> CameraCLI::config_setters{
          return false;
      }}};
 
+class LogCLI
+{
+public:
+    static bool parseCommand(string cmd)
+    {
+        string action;
+        if (auto res = scan(cmd, "{}", action))
+        {
+            if (action == "level")
+            {
+                return setLevel(res.range_as_string());
+            }
+        }
+        return false;
+    }
+private:
+    static bool setLevel(string cmd)
+    {
+        string level;
+        if (auto res = scan(cmd, "{}", level))
+        {
+            if (levels.count(level))
+            {
+                levels.at(level)();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static const map<string, function<void()>> levels;
+};
+
+const map<string, function<void()>> LogCLI::levels{
+    {"debug",
+     [] { Logging::getStdOutLogSink().setLevel(LogLevel::LOGL_DEBUG); }},
+    {"event",
+     [] { Logging::getStdOutLogSink().setLevel(LogLevel::LOGL_EVENT); }},
+    {"info", [] { Logging::getStdOutLogSink().setLevel(LogLevel::LOGL_INFO); }},
+    {"warning",
+     [] { Logging::getStdOutLogSink().setLevel(LogLevel::LOGL_WARNING); }},
+    {"error",
+     [] { Logging::getStdOutLogSink().setLevel(LogLevel::LOGL_ERROR); }},
+    {"critical",
+     [] { Logging::getStdOutLogSink().setLevel(LogLevel::LOGL_CRITICAL); }},
+};
+
 CLI::CLI() {}
 
 CLI::~CLI() { stop(); }
@@ -224,6 +308,7 @@ void CLI::run()
     // clang-format off
     static map<string, function<bool(string)>> targets{
         {"camera", &CameraCLI::parseCommand},
+        {"log", &LogCLI::parseCommand},
         {"exit", [&](string line){ LOG_INFO(log, "Goodbye!"); exit(0); return true; }}
     };
     // clang-format on
@@ -238,7 +323,10 @@ void CLI::run()
             {
                 if (targets.count(target))
                 {
-                    targets.at(target)(res.range_as_string());
+                    if(!targets.at(target)(res.range_as_string()))
+                    {
+                        LOG_ERR(log, "Invalid command");
+                    }
                 }
             }
         }
