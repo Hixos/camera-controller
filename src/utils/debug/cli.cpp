@@ -151,7 +151,7 @@ const map<string, function<bool(string)>> CameraCLI::actions{
 const map<string, function<bool()>> CameraCLI::config_getters{
     {"common",
      []() {
-         sBroker.post(EventConfigGetCommon{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetAll{}, TOPIC_CAMERA_CMD);
          return true;
      }},
     {"shutter_speed",
