@@ -76,13 +76,13 @@ bool JsonTcpServer::isConnected()
 
 void JsonTcpServer::send(json&& j)
 {
-    LOG_DEBUG(log, "Sending json packet: {}", j.dump(-1));
+    // LOG_DEBUG(log, "Sending json packet: {}", j.dump(-1));
     buf_out.put(std::move(j));
 }
 
 void JsonTcpServer::send(const json& j)
 {
-    LOG_DEBUG(log, "Sending json packet: {}", j.dump(-1));
+    // LOG_DEBUG(log, "Sending json packet: {}", j.dump(-1));
     buf_out.put(j);
 }
 
@@ -98,7 +98,7 @@ void JsonTcpServer::run()
             sleep_for(seconds(2));
             continue;
         }
-
+        LOG_DEBUG(log, "Accepted connection from: {}", peer.to_string());
         is_connected = true;
 
         auto sock_rcv = sock.clone();
@@ -151,13 +151,11 @@ void JsonTcpServer::run()
 
 vector<uint8_t> JsonTcpServer::pack(const json& j)
 {
-    string str   = j.dump();
-    uint32_t len = str.length() + 4;
+    string str = j.dump();
     vector<uint8_t> v;
-    v.resize(len);
+    v.resize(str.length() + 4);
 
-    len = htonl(len);
-
+    uint32_t len = htonl(str.length());
     memcpy(v.data(), &len, 4);
     memcpy(v.data() + 4, str.data(), str.length());
 
@@ -173,7 +171,7 @@ void JsonTcpServer::stopSender()
 JsonTcpServer::Receiver::Receiver(sockpp::tcp_socket&& sock,
                                   JsonTcpServer& parent)
     : sock(std::move(sock)), parent(parent),
-      log(parent.log.getChild("Receiver"))
+      log(parent.log.getChild("Rcv"))
 {
     start();
 }

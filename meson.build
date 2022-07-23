@@ -23,7 +23,9 @@ src = [
        'src/events/EventBroker.cpp',
        'src/fsm/CameraController.cpp',
        'src/utils/debug/cli.cpp',
-       'src/comm/JsonTcpServer.cpp'
+       'src/comm/JsonTcpServer.cpp',
+       'src/comm/CommManager.cpp',
+       'src/comm/UDPEchoServer.cpp'
        ]
 
 # Test includes

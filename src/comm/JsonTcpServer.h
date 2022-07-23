@@ -106,7 +106,7 @@ private:
     atomic_bool is_connected = false;
     vector<uint8_t> last_packet{};
 
-    PrintLogger log = Logging::getLogger("JsonTcpServer");
+    PrintLogger log = Logging::getLogger("TcpServ");
 
     sockpp::socket_initializer sockInit;
 };
