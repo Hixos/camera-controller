@@ -63,7 +63,7 @@ public:
     void setDownloadDir(string download_dir);
 private:
     void onStateChanged(CCState state);
-    bool updateConfig();
+    bool getCommonConfig();
 
     bool connect();
 
