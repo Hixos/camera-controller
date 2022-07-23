@@ -167,7 +167,7 @@ public:
      * @brief Sets the exposure time
      * @throw GPhotoError
      * @param    exposuretime Exposure time in us. Must be one of the values
-     * returned in listExposureTimes()
+     * returned in listExposureTimes
      */
     void setShutterSpeed(int32_t shutter_speed);
 
@@ -177,7 +177,7 @@ public:
      * @throw GPhotoError
      * @return list of exposure times, or empty list if error.
      */
-    vector<int> listExposureTimes(bool include_bulb = true);
+    vector<int32_t> getShutterSpeedChoices(bool include_bulb = true);
 
     /**
      * @brief Lists all the available exposure times in the current exposure
@@ -185,7 +185,7 @@ public:
      * @throw GPhotoError
      * @return list of exposure times, or empty list if error.
      */
-    vector<int> listExposureTimes(CameraWidgetRadio& widget,
+    vector<int32_t> getShutterSpeedChoices(CameraWidgetRadio& widget,
                                   bool include_bulb = true);
 
     /**
@@ -208,14 +208,14 @@ public:
      * @throw GPhotoError
      * @return list of apertures (F-Number * 100), or empty list if error.
      */
-    vector<int> listApertures();
+    vector<int32_t> getApertureChoices();
 
     /**
      * @brief Lists all the available apertures.
      * @throw GPhotoError
      * @return list of apertures (F-Number * 100), or empty list if error.
      */
-    vector<int> listApertures(CameraWidgetRadio& widget);
+    vector<int32_t> getApertureChoices(CameraWidgetRadio& widget);
     /**
      * @brief Returns the current ISO.
      * @throw GPhotoError
@@ -235,14 +235,14 @@ public:
      * @throw GPhotoError
      * @return list of ISOs, or empty list if error.
      */
-    vector<int> listISOs();
+    vector<int32_t> getIsoChoices();
 
     /**
      * @brief Lists all the available ISOs.
      * @throw GPhotoError
      * @return list of ISOs, or empty list if error.
      */
-    vector<int> listISOs(CameraWidgetRadio& widget);
+    vector<int32_t> getIsoChoices(CameraWidgetRadio& widget);
 
     /**
      * @brief Returns the current battery percent of the camera
@@ -335,7 +335,7 @@ private:
 
     void updateBulbConfig();
 
-    vector<int> choicesStringToInt(CameraWidgetRadio& widget,
+    vector<int32_t> choicesStringToInt(CameraWidgetRadio& widget,
                                    function<int(string)> conv_func,
                                    bool include_invalid = true);
 

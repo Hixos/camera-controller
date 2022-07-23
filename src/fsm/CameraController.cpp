@@ -160,7 +160,7 @@ State CameraController::stateReady(const EventPtr& ev)
             LOG_INFO(slog, "ENTRY");
             if (!low_latency)
             {
-                if (!updateConfig())
+                if (!getCommonConfig())
                 {
                     postEvent(EventCameraError{});
                 }
@@ -188,11 +188,17 @@ State CameraController::stateReady(const EventPtr& ev)
         case EventConfigGetVibRed::id:
         case EventConfigGetBattery::id:
         case EventConfigGetCaptureTarget::id:
+        case EventConfigGetChoicesShutterSpeed::id:
+        case EventConfigGetChoicesAperture::id:
+        case EventConfigGetChoicesISO::id:
             if (!getConfig(ev))
                 retState = transition(&CameraController::stateError);
             break;
+        case EventConfigGetCommon::id:
+            if (!getCommonConfig())
+                retState = transition(&CameraController::stateError);
+            break;
         case EventCameraCmdCapture::id:
-
             retState = transition(&CameraController::stateCapturing);
             break;
         default:
@@ -386,7 +392,7 @@ State CameraController::stateDownloading(const EventPtr& ev)
     return retState;
 }
 
-bool CameraController::updateConfig()
+bool CameraController::getCommonConfig()
 {
     try
     {
@@ -413,6 +419,15 @@ bool CameraController::updateConfig()
         sEventBroker.post(EventConfigValueBattery{camera.getBatteryPercent()},
                           TOPIC_CAMERA_CONFIG);
 
+        sEventBroker.post(
+            EventConfigChoicesShutterSpeed{
+                camera.getShutterSpeedChoices(false)},
+            TOPIC_CAMERA_CONFIG);
+        sEventBroker.post(
+            EventConfigChoicesAperture{camera.getApertureChoices()},
+            TOPIC_CAMERA_CONFIG);
+        sEventBroker.post(EventConfigChoicesISO{camera.getIsoChoices()},
+                          TOPIC_CAMERA_CONFIG);
         return true;
     }
     catch (gphotow::GPhotoError& gpe)
@@ -520,15 +535,32 @@ bool CameraController::getConfig(const EventPtr& ev)
                     TOPIC_CAMERA_CONFIG);
                 break;
             }
+            case EventConfigGetChoicesShutterSpeed::id:
+            {
+                sEventBroker.post(
+                    EventConfigChoicesShutterSpeed{
+                        camera.getShutterSpeedChoices(false)},
+                    TOPIC_CAMERA_CONFIG);
+                break;
+            }
             case EventConfigSetAperture::id:
             case EventConfigGetAperture::id:
                 sEventBroker.post(
                     EventConfigValueAperture{camera.getAperture()},
                     TOPIC_CAMERA_CONFIG);
                 break;
+            case EventConfigGetChoicesAperture::id:
+                sEventBroker.post(
+                    EventConfigChoicesAperture{camera.getApertureChoices()},
+                    TOPIC_CAMERA_CONFIG);
+                break;
             case EventConfigSetISO::id:
             case EventConfigGetISO::id:
                 sEventBroker.post(EventConfigValueISO{camera.getISO()},
+                                  TOPIC_CAMERA_CONFIG);
+                break;
+            case EventConfigGetChoicesISO::id:
+                sEventBroker.post(EventConfigChoicesISO{camera.getIsoChoices()},
                                   TOPIC_CAMERA_CONFIG);
                 break;
             case EventConfigGetFocalLength::id:

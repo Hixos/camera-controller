@@ -143,7 +143,7 @@ CameraWrapper::ShutterSpeedConfig CameraWrapper::getShutterSpeed()
 {
     CameraWidgetRadio widget{*this, CONFIG_SHUTTER_SPEED};
 
-    vector<int> choices = listExposureTimes(widget);
+    vector<int32_t> choices = getShutterSpeedChoices(widget);
     unsigned int choice          = widget.getID();
     if (choice == bulb_choice)
     {
@@ -166,7 +166,7 @@ void CameraWrapper::setShutterSpeed(int32_t shutter_speed)
     }
     else
     {
-        vector<int> choices = listExposureTimes(widget, false);
+        vector<int32_t> choices = getShutterSpeedChoices(widget, false);
 
         unsigned int id =
             CameraStringConversion::findNearest(choices, shutter_speed);
@@ -176,13 +176,13 @@ void CameraWrapper::setShutterSpeed(int32_t shutter_speed)
     widget.apply();
 }
 
-vector<int> CameraWrapper::listExposureTimes(bool include_bulb)
+vector<int32_t> CameraWrapper::getShutterSpeedChoices(bool include_bulb)
 {
     CameraWidgetRadio widget{*this, CONFIG_SHUTTER_SPEED};
-    return listExposureTimes(widget, include_bulb);
+    return getShutterSpeedChoices(widget, include_bulb);
 }
 
-vector<int> CameraWrapper::listExposureTimes(CameraWidgetRadio& widget,
+vector<int32_t> CameraWrapper::getShutterSpeedChoices(CameraWidgetRadio& widget,
                                              bool include_bulb)
 {
     return choicesStringToInt(
@@ -193,7 +193,7 @@ int32_t CameraWrapper::getAperture()
 {
     CameraWidgetRadio widget{*this, CONFIG_APERTURE};
 
-    vector<int> choices = listApertures(widget);
+    vector<int32_t> choices = getApertureChoices(widget);
     unsigned int id     = widget.getID();
 
     return choices.at(id);
@@ -202,20 +202,20 @@ int32_t CameraWrapper::getAperture()
 void CameraWrapper::setAperture(int aperture)
 {
     CameraWidgetRadio widget{*this, CONFIG_APERTURE};
-    vector<int> choices = listApertures(widget);
+    vector<int32_t> choices = getApertureChoices(widget);
 
     unsigned int id = CameraStringConversion::findNearest(choices, aperture);
     widget.setValue(id);
     widget.apply();
 }
 
-vector<int> CameraWrapper::listApertures()
+vector<int32_t> CameraWrapper::getApertureChoices()
 {
     CameraWidgetRadio widget{*this, CONFIG_APERTURE};
-    return listApertures(widget);
+    return getApertureChoices(widget);
 }
 
-vector<int> CameraWrapper::listApertures(CameraWidgetRadio& widget)
+vector<int32_t> CameraWrapper::getApertureChoices(CameraWidgetRadio& widget)
 {
     return choicesStringToInt(widget, &CameraStringConversion::apertureToInt);
 }
@@ -224,7 +224,7 @@ int32_t CameraWrapper::getISO()
 {
     CameraWidgetRadio widget{*this, CONFIG_ISO};
 
-    vector<int> choices = listISOs(widget);
+    vector<int32_t> choices = getIsoChoices(widget);
     unsigned int id     = widget.getID();
 
     return choices.at(id);
@@ -233,20 +233,20 @@ int32_t CameraWrapper::getISO()
 void CameraWrapper::setISO(int32_t iso)
 {
     CameraWidgetRadio widget{*this, CONFIG_ISO};
-    vector<int> choices = listISOs(widget);
+    vector<int32_t> choices = getIsoChoices(widget);
 
     unsigned int id = CameraStringConversion::findNearest(choices, iso);
     widget.setValue(id);
     widget.apply();
 }
 
-vector<int> CameraWrapper::listISOs()
+vector<int32_t> CameraWrapper::getIsoChoices()
 {
     CameraWidgetRadio widget{*this, CONFIG_ISO};
-    return listISOs(widget);
+    return getIsoChoices(widget);
 }
 
-vector<int> CameraWrapper::listISOs(CameraWidgetRadio& widget)
+vector<int32_t> CameraWrapper::getIsoChoices(CameraWidgetRadio& widget)
 {
     return choicesStringToInt(widget, &CameraStringConversion::isoToInt);
 }
@@ -541,13 +541,13 @@ out:
     }
 }
 
-vector<int> CameraWrapper::choicesStringToInt(CameraWidgetRadio& widget,
+vector<int32_t> CameraWrapper::choicesStringToInt(CameraWidgetRadio& widget,
                                               function<int(string)> conv_func,
                                               bool include_invalid)
 {
     vector<string> choices = widget.getChoices();
 
-    vector<int> int_choices;
+    vector<int32_t> int_choices;
     int string_choice_num = 0;
 
     for (unsigned int i = 0; i < choices.size(); ++i)
@@ -577,7 +577,7 @@ void CameraWrapper::updateBulbConfig()
 {
     CameraWidgetRadio widget{*this, CONFIG_SHUTTER_SPEED};
     vector<string> strings = widget.getChoices();
-    vector<int> values     = listExposureTimes(widget);
+    vector<int32_t> values     = getShutterSpeedChoices(widget);
 
     max_shutter_speed = *std::max_element(values.begin(), values.end());
     for (unsigned int i = 0; i < strings.size(); ++i)
