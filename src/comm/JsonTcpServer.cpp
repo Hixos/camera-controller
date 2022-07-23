@@ -170,8 +170,7 @@ void JsonTcpServer::stopSender()
 
 JsonTcpServer::Receiver::Receiver(sockpp::tcp_socket&& sock,
                                   JsonTcpServer& parent)
-    : sock(std::move(sock)), parent(parent),
-      log(parent.log.getChild("Rcv"))
+    : sock(std::move(sock)), parent(parent), log(parent.log.getChild("Rcv"))
 {
     start();
 }
@@ -230,7 +229,14 @@ void JsonTcpServer::Receiver::run()
             break;
         }
 
-        parent.fun(json::parse(v));
+        try
+        {
+            parent.fun(json::parse(v));
+        }
+        catch (json::parse_error& e)
+        {
+            LOG_ERR(log, "Error parsing JSON packet");
+        }
     }
 
     sock.shutdown();
