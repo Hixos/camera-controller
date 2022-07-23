@@ -20,45 +20,92 @@
  * THE SOFTWARE.
  */
 
-#include <thread>
+#include <scn/scn.h>
+
+#include <argparse/argparse.hpp>
 #include <chrono>
+#include <iostream>
 #include <memory>
+#include <thread>
 
 #include "EventBroker.h"
-#include "utils/logger/PrintLogger.h"
+#include "TcpLogSink.h"
 #include "fsm/CameraController.h"
+#include "comm/CommManager.h"
+#include "comm/UDPEchoServer.h"
+
 #include "utils/EventSniffer.h"
 #include "utils/debug/cli.h"
+#include "utils/logger/PrintLogger.h"
 
-#include "TcpLogSink.h"
-
-using std::this_thread::sleep_for;
+using std::make_shared;
+using std::shared_ptr;
 using std::chrono::milliseconds;
 using std::chrono::seconds;
-using std::shared_ptr;
-using std::make_shared;
+using std::this_thread::sleep_for;
+
+PrintLogger elog = Logging::getLogger("event");
+PrintLogger mlog = Logging::getLogger("main");
 
 void printEvent(const EventPtr& ev, uint8_t topic)
 {
-    PrintLogger log = Logging::getLogger("event");
-    LOG_EVENT(log, "Event {}:{} = {}", ev->name(), getTopicName(topic),  ev->to_string());
+
+    LOG_EVENT(elog, "{} -> {}       {}", ev->name(), getTopicName(topic),
+              ev->to_json().dump(-1));
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    CLI cli{};
-    cli.start();
+    argparse::ArgumentParser program("camera-controller");
 
-    PrintLogger log = Logging::getLogger("main");
-    Logging::addLogSink(make_shared<TcpLogSink>("192.168.1.101", 19996));
+    program.add_argument("-l", "--log-sink")
+        .help("ip_address:port of log sink");
+
+    try
+    {
+        program.parse_args(argc, argv);
+    }
+    catch (const std::runtime_error& err)
+    {
+        // auto arg_log = mlog.getChild("argparse");
+        LOG_ERR(mlog, err.what());
+        std::cerr << program;
+        std::exit(1);
+    }
+
+    if (auto fn = program.present("-l"))
+    {
+        string ip;
+        uint16_t port;
+        if (scn::scan(*fn, "{:[\\d.]}:{}", ip, port))
+        {
+            LOG_DEBUG(mlog.getChild("arg_parse"), "Log sink = {}:{}", ip, port);
+            // Logging::addLogSink(make_shared<TcpLogSink>(ip, port));
+        }
+        else
+        {
+            LOG_ERR(mlog, "Invalid ip:port argument: {}", *fn);
+            std::exit(1);
+        }
+    }
+    else
+    {
+        LOG_DEBUG(mlog, "No log sink!");
+    }
+
     sBroker.start();
-
     EventSniffer sniffer{sEventBroker, &printEvent};
-    
+
     CameraController camera;
     camera.start();
 
-    for(;;)
+    CLI cli{};
+    cli.start();
+
+    CommManager comm(60099);
+    UDPEchoServer echo("0.0.0.0", 60050, false);
+
+    for (;;)
         sleep_for(seconds(10));
     return 0;
-}   
+}
