@@ -25,7 +25,8 @@ src = [
        'src/utils/debug/cli.cpp',
        'src/comm/JsonTcpServer.cpp',
        'src/comm/CommManager.cpp',
-       'src/comm/UDPEchoServer.cpp'
+       'src/comm/UDPEchoServer.cpp',
+       'src/fsm/CameraControllerMaps.cpp'
        ]
 
 # Test includes
@@ -39,7 +40,6 @@ src_catch = ['tests/camerawrapper.cpp']
 
 # Other stand-alone tests
 tests = [
-              'tests/cli.cpp',
               'tests/event_demo.cpp',
               'tests/camera_controller_fsm.cpp',
               'tests/tcp_log.cpp',
