@@ -28,6 +28,8 @@
 
 // Autogen date:    $gen_date
 
+#pragma once
+
 #include <cassert>
 #include <cstdint>
 #include <string>

@@ -2,6 +2,9 @@ TOPIC_CAMERA_CONFIG
 TOPIC_CAMERA_CMD
 TOPIC_CAMERA_EVENT
 TOPIC_REMOTE_CMD
+TOPIC_MODE_CONTROLLER
+TOPIC_MODE_FSM
+TOPIC_MODE_STATE
 
 EventCameraCmdConnect
 EventCameraCmdDisconnect
@@ -162,3 +165,38 @@ EventConfigValueAutoISO
 }
 
 EventConfigGetAll
+
+EventGetCurrentMode
+EventValueCurrentMode
+{
+    string mode
+}
+
+EventModeStopped
+
+EventModeStop
+
+EventModeIntervalometer
+{
+    int32_t intervalms
+    int32_t total_captures
+}
+
+EventIntervalometerStart
+{
+    int32_t intervalms
+    int32_t total_captures
+}
+
+EventIntervalometerDeadlineExpired
+EventIntervalometerState
+{
+    string state
+    int32_t intervalms
+    int32_t num_captures
+    int32_t total_captures
+}
+
+
+EventEnableEventPassThrough
+EventDisableEventPassThrough

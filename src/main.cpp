@@ -38,6 +38,9 @@
 #include "utils/debug/cli.h"
 #include "utils/logger/PrintLogger.h"
 
+#include "fsm/ModeController.h"
+#include "fsm/modes/Intervalometer.h"
+
 using std::make_shared;
 using std::shared_ptr;
 using std::chrono::milliseconds;
@@ -80,7 +83,7 @@ int main(int argc, char* argv[])
         if (scn::scan(*fn, "{:[\\d.]}:{}", ip, port))
         {
             LOG_DEBUG(mlog.getChild("arg_parse"), "Log sink = {}:{}", ip, port);
-            // Logging::addLogSink(make_shared<TcpLogSink>(ip, port));
+            Logging::addLogSink(make_shared<TcpLogSink>(ip, port));
         }
         else
         {
@@ -98,12 +101,20 @@ int main(int argc, char* argv[])
 
     CameraController camera;
     camera.start();
+    
+    sBroker.post(EventCameraCmdConnect{}, TOPIC_CAMERA_CMD);
 
     CLI cli{};
     cli.start();
 
     CommManager comm(60099);
-    UDPEchoServer echo("0.0.0.0", 60050, false);
+    // UDPEchoServer echo("0.0.0.0", 60050, false);
+
+    ModeController mode_ctrl{};
+    Intervalometer intervalometer{};
+
+    mode_ctrl.start();
+    intervalometer.start();
 
     for (;;)
         sleep_for(seconds(10));

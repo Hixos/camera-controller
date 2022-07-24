@@ -269,6 +269,55 @@ class EventConfigGetAll : Event(65)
 {
 }
 
+class EventGetCurrentMode : Event(66) 
+{
+}
+
+class EventValueCurrentMode : Event(67) 
+{
+    @SerializedName("mode" ) var mode : String? = null
+}
+
+class EventModeStopped : Event(68) 
+{
+}
+
+class EventModeStop : Event(69) 
+{
+}
+
+class EventModeIntervalometer : Event(70) 
+{
+    @SerializedName("intervalms" ) var intervalms : Int? = null
+    @SerializedName("total_captures" ) var totalCaptures : Int? = null
+}
+
+class EventIntervalometerStart : Event(71) 
+{
+    @SerializedName("intervalms" ) var intervalms : Int? = null
+    @SerializedName("total_captures" ) var totalCaptures : Int? = null
+}
+
+class EventIntervalometerDeadlineExpired : Event(72) 
+{
+}
+
+class EventIntervalometerState : Event(73) 
+{
+    @SerializedName("state" ) var state : String? = null
+    @SerializedName("intervalms" ) var intervalms : Int? = null
+    @SerializedName("num_captures" ) var numCaptures : Int? = null
+    @SerializedName("total_captures" ) var totalCaptures : Int? = null
+}
+
+class EventEnableEventPassThrough : Event(74) 
+{
+}
+
+class EventDisableEventPassThrough : Event(75) 
+{
+}
+
 
 
 fun jsonToEvent(json: String) : Event?
@@ -333,6 +382,16 @@ fun jsonToEvent(json: String) : Event?
         63 -> return gson.fromJson(json, EventConfigSetAutoISO::class.java)
         64 -> return gson.fromJson(json, EventConfigValueAutoISO::class.java)
         65 -> return gson.fromJson(json, EventConfigGetAll::class.java)
+        66 -> return gson.fromJson(json, EventGetCurrentMode::class.java)
+        67 -> return gson.fromJson(json, EventValueCurrentMode::class.java)
+        68 -> return gson.fromJson(json, EventModeStopped::class.java)
+        69 -> return gson.fromJson(json, EventModeStop::class.java)
+        70 -> return gson.fromJson(json, EventModeIntervalometer::class.java)
+        71 -> return gson.fromJson(json, EventIntervalometerStart::class.java)
+        72 -> return gson.fromJson(json, EventIntervalometerDeadlineExpired::class.java)
+        73 -> return gson.fromJson(json, EventIntervalometerState::class.java)
+        74 -> return gson.fromJson(json, EventEnableEventPassThrough::class.java)
+        75 -> return gson.fromJson(json, EventDisableEventPassThrough::class.java)
 
         
         else -> return null

@@ -48,18 +48,18 @@ State CameraController::stateInit(const EventPtr& ev)
 
 State CameraController::stateSuper(const EventPtr& ev)
 {
-    auto slog      = log.getChild("S_SUP");
+    auto slog      = log.getChild("Super");
     State retState = HANDLED;
     switch (ev->getID())
     {
         case EventSMEntry::id:
-            LOG_INFO(slog, "ENTRY");
+            LOG_STATE(slog, "ENTRY");
             break;
         case EventSMInit::id:
             retState = transition(&CameraController::stateDisconnected);
             break;
         case EventSMExit::id:
-            LOG_INFO(slog, "EXIT");
+            LOG_STATE(slog, "EXIT");
             break;
         case EventCameraCmdDownload::id:
         {
@@ -88,18 +88,18 @@ State CameraController::stateSuper(const EventPtr& ev)
 
 State CameraController::stateDisconnected(const EventPtr& ev)
 {
-    auto slog      = log.getChild("S_DISC");
+    auto slog      = log.getChild("Disconn");
     State retState = HANDLED;
     switch (ev->getID())
     {
         case EventSMEntry::id:
             onStateChanged(CCState::DISCONNECTED);
-            LOG_INFO(slog, "ENTRY");
+            LOG_STATE(slog, "ENTRY");
             break;
         case EventSMInit::id:
             break;
         case EventSMExit::id:
-            LOG_INFO(slog, "EXIT");
+            LOG_STATE(slog, "EXIT");
             break;
         case EventCameraCmdConnect::id:
             if (connect())
@@ -117,14 +117,14 @@ State CameraController::stateDisconnected(const EventPtr& ev)
 
 State CameraController::stateConnected(const EventPtr& ev)
 {
-    auto slog      = log.getChild("S_CONN");
+    auto slog      = log.getChild("Conn");
     State retState = HANDLED;
     switch (ev->getID())
     {
         case EventSMEntry::id:
             sEventBroker.post(EventCameraConnected{}, TOPIC_CAMERA_EVENT);
 
-            LOG_INFO(slog, "ENTRY");
+            LOG_STATE(slog, "ENTRY");
 
             try
             {
@@ -141,7 +141,7 @@ State CameraController::stateConnected(const EventPtr& ev)
             retState = transition(&CameraController::stateReady);
             break;
         case EventSMExit::id:
-            LOG_INFO(slog, "EXIT");
+            LOG_STATE(slog, "EXIT");
             onCameraConnected(false);
             break;
         case EventCameraError::id:
@@ -156,7 +156,7 @@ State CameraController::stateConnected(const EventPtr& ev)
 
 State CameraController::stateReady(const EventPtr& ev)
 {
-    auto slog      = log.getChild("S_RDY");
+    auto slog      = log.getChild("Ready");
     State retState = HANDLED;
     switch (ev->getID())
     {
@@ -164,7 +164,7 @@ State CameraController::stateReady(const EventPtr& ev)
             onStateChanged(CCState::READY);
             sEventBroker.post(EventCameraReady{}, TOPIC_CAMERA_EVENT);
 
-            LOG_INFO(slog, "ENTRY");
+            LOG_STATE(slog, "ENTRY");
             if (!low_latency)
             {
                 if (!getAllConfig())
@@ -177,7 +177,7 @@ State CameraController::stateReady(const EventPtr& ev)
         case EventSMInit::id:
             break;
         case EventSMExit::id:
-            LOG_INFO(slog, "EXIT");
+            LOG_STATE(slog, "EXIT");
             break;
         case EventConfigGetAll::id:
             if (!getAllConfig())
@@ -214,19 +214,19 @@ State CameraController::handleConfigGetSet(const EventPtr& ev)
 
 State CameraController::stateConnectionError(const EventPtr& ev)
 {
-    auto slog      = log.getChild("S_CONERR");
+    auto slog      = log.getChild("ConnErr");
     State retState = HANDLED;
     switch (ev->getID())
     {
         case EventSMEntry::id:
             onStateChanged(CCState::CONNECTION_ERROR);
             sEventBroker.post(EventCameraConnectionError{}, TOPIC_CAMERA_EVENT);
-            LOG_ERR(slog, "ENTRY");
+            LOG_STATE(slog, "ENTRY");
             break;
         case EventSMInit::id:
             break;
         case EventSMExit::id:
-            LOG_INFO(slog, "EXIT");
+            LOG_STATE(slog, "EXIT");
             break;
         case EventCameraCmdConnect::id:
             if (connect())
@@ -244,13 +244,13 @@ State CameraController::stateConnectionError(const EventPtr& ev)
 
 State CameraController::stateError(const EventPtr& ev)
 {
-    auto slog                           = log.getChild("S_ERR");
+    auto slog                           = log.getChild("Error");
     State retState                      = HANDLED;
     static constexpr int RETRY_DELAY_MS = 2000;
     switch (ev->getID())
     {
         case EventSMEntry::id:
-            LOG_ERR(slog, "ENTRY");
+            LOG_STATE(slog, "ENTRY");
             onStateChanged(CCState::ERROR);
             sEventBroker.post(EventCameraError{}, TOPIC_CAMERA_EVENT);
             state_error_recover_event_id = sEventBroker.postDelayed(
@@ -259,7 +259,7 @@ State CameraController::stateError(const EventPtr& ev)
         case EventSMInit::id:
             break;
         case EventSMExit::id:
-            LOG_INFO(slog, "EXIT");
+            LOG_STATE(slog, "EXIT");
             sEventBroker.removeDelayed(state_error_recover_event_id);
             break;
         case EventCameraIgnoreError::id:
@@ -291,19 +291,19 @@ State CameraController::stateError(const EventPtr& ev)
 
 State CameraController::stateCapturing(const EventPtr& ev)
 {
-    auto slog      = log.getChild("S_CAPT");
+    auto slog      = log.getChild("Capture");
     State retState = HANDLED;
     switch (ev->getID())
     {
         case EventSMEntry::id:
-            LOG_INFO(slog, "ENTRY");
+            LOG_STATE(slog, "ENTRY");
             onStateChanged(CCState::CAPTURING);
             postEvent(EventCameraCmdCapture_Internal{});
             break;
         case EventSMInit::id:
             break;
         case EventSMExit::id:
-            LOG_INFO(slog, "EXIT");
+            LOG_STATE(slog, "EXIT");
             break;
         case EventCameraCmdCapture_Internal::id:
         {
@@ -348,19 +348,19 @@ State CameraController::stateCapturing(const EventPtr& ev)
 
 State CameraController::stateDownloading(const EventPtr& ev)
 {
-    auto slog      = log.getChild("S_DOWN");
+    auto slog      = log.getChild("Dwonload");
     State retState = HANDLED;
     switch (ev->getID())
     {
         case EventSMEntry::id:
-            LOG_INFO(slog, "ENTRY");
+            LOG_STATE(slog, "ENTRY");
             onStateChanged(CCState::DOWNLOADING);
             postEvent(EventCameraCmdDownload_Internal{});
             break;
         case EventSMInit::id:
             break;
         case EventSMExit::id:
-            LOG_INFO(slog, "EXIT");
+            LOG_STATE(slog, "EXIT");
             break;
         case EventCameraCmdDownload_Internal::id:
         {

@@ -26,7 +26,9 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-23 18:42:13.336726
+// Autogen date:    2022-07-24 18:16:33.458843
+
+#pragma once
 
 #include <cassert>
 #include <cstdint>
@@ -44,7 +46,10 @@ enum Topics : uint8_t
     TOPIC_CAMERA_CONFIG,
     TOPIC_CAMERA_CMD,
     TOPIC_CAMERA_EVENT,
-    TOPIC_REMOTE_CMD
+    TOPIC_REMOTE_CMD,
+    TOPIC_MODE_CONTROLLER,
+    TOPIC_MODE_FSM,
+    TOPIC_MODE_STATE
 };
 
 string getTopicName(uint8_t topic);
@@ -982,4 +987,177 @@ struct EventConfigGetAll : public Event
     nlohmann::json to_json() const override;
 
     JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventConfigGetAll);
+};
+
+struct EventGetCurrentMode : public Event
+{
+    static constexpr uint16_t id = 66;
+
+    EventGetCurrentMode();
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventGetCurrentMode);
+};
+
+struct EventValueCurrentMode : public Event
+{
+    static constexpr uint16_t id = 67;
+
+    EventValueCurrentMode() : Event(id){};
+    EventValueCurrentMode(string mode);
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    string mode;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventValueCurrentMode, mode);
+};
+
+struct EventModeStopped : public Event
+{
+    static constexpr uint16_t id = 68;
+
+    EventModeStopped();
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventModeStopped);
+};
+
+struct EventModeStop : public Event
+{
+    static constexpr uint16_t id = 69;
+
+    EventModeStop();
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventModeStop);
+};
+
+struct EventModeIntervalometer : public Event
+{
+    static constexpr uint16_t id = 70;
+
+    EventModeIntervalometer() : Event(id){};
+    EventModeIntervalometer(int32_t intervalms, int32_t total_captures);
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    int32_t intervalms;
+    int32_t total_captures;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventModeIntervalometer, intervalms,
+                                       total_captures);
+};
+
+struct EventIntervalometerStart : public Event
+{
+    static constexpr uint16_t id = 71;
+
+    EventIntervalometerStart() : Event(id){};
+    EventIntervalometerStart(int32_t intervalms, int32_t total_captures);
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    int32_t intervalms;
+    int32_t total_captures;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventIntervalometerStart, intervalms,
+                                       total_captures);
+};
+
+struct EventIntervalometerDeadlineExpired : public Event
+{
+    static constexpr uint16_t id = 72;
+
+    EventIntervalometerDeadlineExpired();
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(
+        EventIntervalometerDeadlineExpired);
+};
+
+struct EventIntervalometerState : public Event
+{
+    static constexpr uint16_t id = 73;
+
+    EventIntervalometerState() : Event(id){};
+    EventIntervalometerState(string state, int32_t intervalms,
+                             int32_t num_captures, int32_t total_captures);
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    string state;
+    int32_t intervalms;
+    int32_t num_captures;
+    int32_t total_captures;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE(EventIntervalometerState, state,
+                                       intervalms, num_captures,
+                                       total_captures);
+};
+
+struct EventEnableEventPassThrough : public Event
+{
+    static constexpr uint16_t id = 74;
+
+    EventEnableEventPassThrough();
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventEnableEventPassThrough);
+};
+
+struct EventDisableEventPassThrough : public Event
+{
+    static constexpr uint16_t id = 75;
+
+    EventDisableEventPassThrough();
+
+    string name() const override;
+
+    string to_string(int indent = -1) const override;
+
+    nlohmann::json to_json() const override;
+
+    JSON_EVENT_SERIALIZATION_INTRUSIVE_NOARGS(EventDisableEventPassThrough);
 };

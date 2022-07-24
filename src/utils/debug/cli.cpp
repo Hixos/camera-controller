@@ -22,6 +22,7 @@
 
 #include "cli.h"
 
+#include <cstdint>
 #include <functional>
 #include <map>
 #include <string>
@@ -110,14 +111,14 @@ const map<string, function<bool(string)>> CameraCLI::actions{
          if (auto res = scan_value<bool>(cmd))
          {
              sBroker.post(EventCameraCmdLowLatency{res.value()},
-                          TOPIC_CAMERA_CMD);
+                          TOPIC_REMOTE_CMD);
              return true;
          }
          return false;
      }},
     {"capture",
      [](string cmd) {
-         sBroker.post(EventCameraCmdCapture{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventCameraCmdCapture{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"download",
@@ -125,24 +126,24 @@ const map<string, function<bool(string)>> CameraCLI::actions{
          if (auto res = scan_value<bool>(cmd))
          {
              sBroker.post(EventCameraCmdDownload{res.value()},
-                          TOPIC_CAMERA_CMD);
+                          TOPIC_REMOTE_CMD);
              return true;
          }
          return false;
      }},
     {"connect",
      [](string cmd) {
-         sBroker.post(EventCameraCmdConnect{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventCameraCmdConnect{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"disconnect",
      [](string cmd) {
-         sBroker.post(EventCameraCmdDisconnect{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventCameraCmdDisconnect{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"recover",
      [](string cmd) {
-         sBroker.post(EventCameraCmdRecoverError{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventCameraCmdRecoverError{}, TOPIC_REMOTE_CMD);
          return true;
      }},
 
@@ -151,47 +152,47 @@ const map<string, function<bool(string)>> CameraCLI::actions{
 const map<string, function<bool()>> CameraCLI::config_getters{
     {"common",
      []() {
-         sBroker.post(EventConfigGetAll{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetAll{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"shutter_speed",
      []() {
-         sBroker.post(EventConfigGetShutterSpeed{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetShutterSpeed{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"aperture",
      []() {
-         sBroker.post(EventConfigGetAperture{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetAperture{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"iso",
      []() {
-         sBroker.post(EventConfigGetISO{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetISO{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"battery",
      []() {
-         sBroker.post(EventConfigGetBattery{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetBattery{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"focal_length",
      []() {
-         sBroker.post(EventConfigGetFocalLength{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetFocalLength{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"focus_mode",
      []() {
-         sBroker.post(EventConfigGetFocusMode{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetFocusMode{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"long_exp_nr",
      []() {
-         sBroker.post(EventConfigGetLongExpNR{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetLongExpNR{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"light_meter",
      []() {
-         sBroker.post(EventConfigGetLightMeter{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetLightMeter{}, TOPIC_REMOTE_CMD);
          return true;
      }},
 };
@@ -199,16 +200,16 @@ const map<string, function<bool()>> CameraCLI::config_getters{
 const map<string, function<bool()>> CameraCLI::config_choices{
     {"shutter_speed",
      []() {
-         sBroker.post(EventConfigGetChoicesShutterSpeed{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetChoicesShutterSpeed{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"aperture",
      []() {
-         sBroker.post(EventConfigGetChoicesAperture{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetChoicesAperture{}, TOPIC_REMOTE_CMD);
          return true;
      }},
     {"iso", []() {
-         sBroker.post(EventConfigGetChoicesISO{}, TOPIC_CAMERA_CMD);
+         sBroker.post(EventConfigGetChoicesISO{}, TOPIC_REMOTE_CMD);
          return true;
      }}};
 
@@ -219,7 +220,7 @@ const map<string, function<bool(string)>> CameraCLI::config_setters{
          {
              sBroker.post(
                  EventConfigSetShutterSpeed{(int32_t)(res.value() * 1000000)},
-                 TOPIC_CAMERA_CMD);
+                 TOPIC_REMOTE_CMD);
              return true;
          }
          return false;
@@ -229,7 +230,7 @@ const map<string, function<bool(string)>> CameraCLI::config_setters{
          if (auto res = scan_value<int32_t>(cmd))
          {
              sBroker.post(EventConfigSetAperture{res.value()},
-                          TOPIC_CAMERA_CMD);
+                          TOPIC_REMOTE_CMD);
              return true;
          }
          return false;
@@ -238,7 +239,7 @@ const map<string, function<bool(string)>> CameraCLI::config_setters{
      [](string cmd) {
          if (auto res = scan_value<int32_t>(cmd))
          {
-             sBroker.post(EventConfigSetISO{res.value()}, TOPIC_CAMERA_CMD);
+             sBroker.post(EventConfigSetISO{res.value()}, TOPIC_REMOTE_CMD);
              return true;
          }
          return false;
@@ -248,10 +249,10 @@ const map<string, function<bool(string)>> CameraCLI::config_setters{
          {
              if (res.value() == "sd")
                  sBroker.post(EventConfigSetCaptureTarget{"Memory card"},
-                              TOPIC_CAMERA_CMD);
+                              TOPIC_REMOTE_CMD);
              else if (res.value() == "ram")
                  sBroker.post(EventConfigSetCaptureTarget{"Internal RAM"},
-                              TOPIC_CAMERA_CMD);
+                              TOPIC_REMOTE_CMD);
              else
                  return false;
              return true;
@@ -307,6 +308,62 @@ const map<string, function<void()>> LogCLI::levels{
      [] { Logging::getStdOutLogSink().setLevel(LogLevel::LOGL_CRITICAL); }},
 };
 
+class IntervalometerCLI
+{
+public:
+    static bool parseCommand(string cmd)
+    {
+        string action;
+        auto res1 = scan(cmd, "{}", action);
+        if (res1)
+        {
+            if (action == "start")
+            {
+                int32_t interval;
+                int32_t total_captures;
+                if (auto res2 = scan(res1.range_as_string(), "{} {}", interval,
+                                     total_captures))
+                {
+                    sEventBroker.post(
+                        EventModeIntervalometer{interval, total_captures},
+                        TOPIC_REMOTE_CMD);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
+
+class ModeCLI
+{
+public:
+    static bool parseCommand(string cmd)
+    {
+        string action;
+        if (auto res = scan(cmd, "{}", action))
+        {
+            if (action == "stop")
+            {
+                sEventBroker.post(EventModeStop{}, TOPIC_REMOTE_CMD);
+                return true;
+            }
+
+            if (action == "get")
+            {
+                sEventBroker.post(EventGetCurrentMode{}, TOPIC_REMOTE_CMD);
+                return true;
+            }
+
+            if (action == "interv")
+            {
+                return IntervalometerCLI::parseCommand(res.range_as_string());
+            }
+        }
+        return false;
+    }
+};
+
 CLI::CLI() {}
 
 CLI::~CLI() { stop(); }
@@ -317,6 +374,7 @@ void CLI::run()
     static map<string, function<bool(string)>> targets{
         {"camera", &CameraCLI::parseCommand},
         {"log", &LogCLI::parseCommand},
+        {"mode", &ModeCLI::parseCommand},
         {"exit", [&](string line){ LOG_INFO(log, "Goodbye!"); exit(0); return true; }}
     };
     // clang-format on

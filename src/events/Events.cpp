@@ -26,7 +26,7 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-23 18:42:13.336726
+// Autogen date:    2022-07-24 18:16:33.458843
 
 #include "Events.h"
 
@@ -41,13 +41,19 @@ const map<uint8_t, string> topic_string_map = {
     {TOPIC_CAMERA_CONFIG, "TOPIC_CAMERA_CONFIG"},
     {TOPIC_CAMERA_CMD, "TOPIC_CAMERA_CMD"},
     {TOPIC_CAMERA_EVENT, "TOPIC_CAMERA_EVENT"},
-    {TOPIC_REMOTE_CMD, "TOPIC_REMOTE_CMD"}};
+    {TOPIC_REMOTE_CMD, "TOPIC_REMOTE_CMD"},
+    {TOPIC_MODE_CONTROLLER, "TOPIC_MODE_CONTROLLER"},
+    {TOPIC_MODE_FSM, "TOPIC_MODE_FSM"},
+    {TOPIC_MODE_STATE, "TOPIC_MODE_STATE"}};
 
 const map<string, uint8_t> topic_id_map = {
     {"TOPIC_CAMERA_CONFIG", TOPIC_CAMERA_CONFIG},
     {"TOPIC_CAMERA_CMD", TOPIC_CAMERA_CMD},
     {"TOPIC_CAMERA_EVENT", TOPIC_CAMERA_EVENT},
-    {"TOPIC_REMOTE_CMD", TOPIC_REMOTE_CMD}};
+    {"TOPIC_REMOTE_CMD", TOPIC_REMOTE_CMD},
+    {"TOPIC_MODE_CONTROLLER", TOPIC_MODE_CONTROLLER},
+    {"TOPIC_MODE_FSM", TOPIC_MODE_FSM},
+    {"TOPIC_MODE_STATE", TOPIC_MODE_STATE}};
 
 string getTopicName(uint8_t topic)
 {
@@ -1259,6 +1265,222 @@ nlohmann::json EventConfigGetAll::to_json() const
     return nlohmann::json(*this);
 }
 
+EventGetCurrentMode::EventGetCurrentMode() : Event(id) {}
+
+string EventGetCurrentMode::name() const { return "EventGetCurrentMode"; }
+
+string EventGetCurrentMode::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventGetCurrentMode::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventValueCurrentMode::EventValueCurrentMode(string mode)
+    : Event(id), mode(mode)
+{
+}
+
+string EventValueCurrentMode::name() const { return "EventValueCurrentMode"; }
+
+string EventValueCurrentMode::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventValueCurrentMode::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventModeStopped::EventModeStopped() : Event(id) {}
+
+string EventModeStopped::name() const { return "EventModeStopped"; }
+
+string EventModeStopped::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventModeStopped::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventModeStop::EventModeStop() : Event(id) {}
+
+string EventModeStop::name() const { return "EventModeStop"; }
+
+string EventModeStop::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventModeStop::to_json() const { return nlohmann::json(*this); }
+
+EventModeIntervalometer::EventModeIntervalometer(int32_t intervalms,
+                                                 int32_t total_captures)
+    : Event(id), intervalms(intervalms), total_captures(total_captures)
+{
+}
+
+string EventModeIntervalometer::name() const
+{
+    return "EventModeIntervalometer";
+}
+
+string EventModeIntervalometer::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventModeIntervalometer::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventIntervalometerStart::EventIntervalometerStart(int32_t intervalms,
+                                                   int32_t total_captures)
+    : Event(id), intervalms(intervalms), total_captures(total_captures)
+{
+}
+
+string EventIntervalometerStart::name() const
+{
+    return "EventIntervalometerStart";
+}
+
+string EventIntervalometerStart::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventIntervalometerStart::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventIntervalometerDeadlineExpired::EventIntervalometerDeadlineExpired()
+    : Event(id)
+{
+}
+
+string EventIntervalometerDeadlineExpired::name() const
+{
+    return "EventIntervalometerDeadlineExpired";
+}
+
+string EventIntervalometerDeadlineExpired::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventIntervalometerDeadlineExpired::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventIntervalometerState::EventIntervalometerState(string state,
+                                                   int32_t intervalms,
+                                                   int32_t num_captures,
+                                                   int32_t total_captures)
+    : Event(id), state(state), intervalms(intervalms),
+      num_captures(num_captures), total_captures(total_captures)
+{
+}
+
+string EventIntervalometerState::name() const
+{
+    return "EventIntervalometerState";
+}
+
+string EventIntervalometerState::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventIntervalometerState::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventEnableEventPassThrough::EventEnableEventPassThrough() : Event(id) {}
+
+string EventEnableEventPassThrough::name() const
+{
+    return "EventEnableEventPassThrough";
+}
+
+string EventEnableEventPassThrough::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventEnableEventPassThrough::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventDisableEventPassThrough::EventDisableEventPassThrough() : Event(id) {}
+
+string EventDisableEventPassThrough::name() const
+{
+    return "EventDisableEventPassThrough";
+}
+
+string EventDisableEventPassThrough::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventDisableEventPassThrough::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
 EventPtr jsonToEvent(const nlohmann::json& j)
 {
     switch (static_cast<uint16_t>(j.at("event_id")))
@@ -1481,6 +1703,44 @@ EventPtr jsonToEvent(const nlohmann::json& j)
             break;
         case EventConfigGetAll::id:
             return make_shared<EventConfigGetAll>(j.get<EventConfigGetAll>());
+            break;
+        case EventGetCurrentMode::id:
+            return make_shared<EventGetCurrentMode>(
+                j.get<EventGetCurrentMode>());
+            break;
+        case EventValueCurrentMode::id:
+            return make_shared<EventValueCurrentMode>(
+                j.get<EventValueCurrentMode>());
+            break;
+        case EventModeStopped::id:
+            return make_shared<EventModeStopped>(j.get<EventModeStopped>());
+            break;
+        case EventModeStop::id:
+            return make_shared<EventModeStop>(j.get<EventModeStop>());
+            break;
+        case EventModeIntervalometer::id:
+            return make_shared<EventModeIntervalometer>(
+                j.get<EventModeIntervalometer>());
+            break;
+        case EventIntervalometerStart::id:
+            return make_shared<EventIntervalometerStart>(
+                j.get<EventIntervalometerStart>());
+            break;
+        case EventIntervalometerDeadlineExpired::id:
+            return make_shared<EventIntervalometerDeadlineExpired>(
+                j.get<EventIntervalometerDeadlineExpired>());
+            break;
+        case EventIntervalometerState::id:
+            return make_shared<EventIntervalometerState>(
+                j.get<EventIntervalometerState>());
+            break;
+        case EventEnableEventPassThrough::id:
+            return make_shared<EventEnableEventPassThrough>(
+                j.get<EventEnableEventPassThrough>());
+            break;
+        case EventDisableEventPassThrough::id:
+            return make_shared<EventDisableEventPassThrough>(
+                j.get<EventDisableEventPassThrough>());
             break;
 
         default:

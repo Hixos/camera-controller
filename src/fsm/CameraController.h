@@ -93,7 +93,7 @@ private:
 
     gphotow::CameraWrapper camera{};
 
-    PrintLogger log = Logging::getLogger("CC_FSM");
+    PrintLogger log = Logging::getLogger("CamCtrl");
 
     uint16_t state_error_recover_event_id = 0;
 
