@@ -97,33 +97,7 @@ public:
         return (this->state == test_state);
     }
     
-    /**
-     * @brief Defers an event for use in a later state
-     * 
-     * @param ev event
-     */
-    void defer(const EventPtr& ev)
-    {
-        deferred_events.put(ev);
-    }
-
-    /**
-     * @brief Checks if there are deferred events available
-     */
-    bool hasDeferred()
-    {
-        return !deferred_events.empty();
-    }
-
-    /**
-     * @brief Obtains the first deferred events in the queue
-     */
-    EventPtr getDeferred()
-    {
-        return deferred_events.pop();
-    }
-
-    /* Internal pointers representing the state o the HSM*/
+        /* Internal pointers representing the state o the HSM*/
     State (T::*state)(const EventPtr& ev);
     State (T::*temp)(const EventPtr& ev);
 
@@ -387,6 +361,40 @@ protected:
         this->temp  = target;
     }
 
+    /**
+     * @brief Defers an event for use in a later state
+     * 
+     * @param ev event
+     */
+    void defer(const EventPtr& ev)
+    {
+        deferred_events.put(ev);
+    }
+
+    /**
+     * @brief Checks if there are deferred events available
+     */
+    bool hasDeferred()
+    {
+        return !deferred_events.empty();
+    }
+
+    /**
+     * @brief Obtains the first deferred events in the queue
+     */
+    EventPtr getDeferred()
+    {
+        return deferred_events.pop();
+    }
+
+    void processDeferred()
+    {
+        while(hasDeferred())
+        {
+            postEvent(getDeferred());
+        }
+    }
+    
     State Hsm_top(const EventPtr& ev) { return IGNORED; }
 
 private:
