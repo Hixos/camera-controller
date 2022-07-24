@@ -43,6 +43,8 @@ string getLevelString(uint8_t level)
             return "DEBUG";
         case LOGL_EVENT:
             return "EVENT";
+        case LOGL_STATE:
+            return "STATE";
         case LOGL_INFO:
             return "INFO";
         case LOGL_WARNING:

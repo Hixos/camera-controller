@@ -41,8 +41,9 @@ struct LogRecord
 enum LogLevel : uint8_t
 {
     LOGL_NOTSET   = 0,
+    LOGL_EVENT    = 5,
     LOGL_DEBUG    = 10,
-    LOGL_EVENT    = 15,
+    LOGL_STATE    = 15,
     LOGL_INFO     = 20,
     LOGL_WARNING  = 30,
     LOGL_ERROR    = 40,

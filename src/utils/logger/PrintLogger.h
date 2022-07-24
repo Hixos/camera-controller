@@ -153,6 +153,8 @@ private:
 
 #define LOG_EVENT(logger, ...) LOG(logger, LogLevel::LOGL_EVENT, __VA_ARGS__)
 
+#define LOG_STATE(logger, ...) LOG(logger, LogLevel::LOGL_STATE, __VA_ARGS__)
+
 #define LOG_INFO(logger, ...) LOG(logger, LogLevel::LOGL_INFO, __VA_ARGS__)
 
 #define LOG_WARN(logger, ...) LOG(logger, LogLevel::LOGL_WARNING, __VA_ARGS__)
@@ -169,6 +171,9 @@ private:
 
 #define LOG_EVENT_ASYNC(logger, ...) \
     LOG_ASYNC(logger, LogLevel::LOGL_EVENT, __VA_ARGS__)
+
+#define LOG_STATE_ASYNC(logger, ...) \
+    LOG_ASYNC(logger, LogLevel::LOGL_STATE, __VA_ARGS__)
 
 #define LOG_INFO_ASYNC(logger, ...) \
     LOG_ASYNC(logger, LogLevel::LOGL_INFO, __VA_ARGS__)
