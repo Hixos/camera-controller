@@ -15,7 +15,9 @@
             "cppStandard": "c++20",
             // "compileCommands": "${workspaceFolder}/builddir/debug/compile_commands.json",
             "browse": {
-                "path": [],
+                "path": [
+                    "src/"
+                ],
                 "limitSymbolsToIncludedHeaders": true
             }
         },
