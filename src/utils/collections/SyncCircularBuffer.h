@@ -204,6 +204,6 @@ public:
 private:
     CircularBuffer<T, Size> buf;
 
-    mutex mut;
-    condition_variable cv;
+    mutable mutex mut;
+    mutable condition_variable cv;
 };

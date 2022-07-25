@@ -26,26 +26,26 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
+#include <filesystem>
 #include <thread>
 
 #include "EventBroker.h"
 #include "TcpLogSink.h"
-#include "fsm/CameraController.h"
 #include "comm/CommManager.h"
 #include "comm/UDPEchoServer.h"
-
+#include "fsm/CameraController.h"
+#include "fsm/ModeController.h"
+#include "fsm/modes/Intervalometer.h"
 #include "utils/EventSniffer.h"
 #include "utils/debug/cli.h"
 #include "utils/logger/PrintLogger.h"
-
-#include "fsm/ModeController.h"
-#include "fsm/modes/Intervalometer.h"
 
 using std::make_shared;
 using std::shared_ptr;
 using std::chrono::milliseconds;
 using std::chrono::seconds;
 using std::this_thread::sleep_for;
+using namespace std::filesystem;
 
 PrintLogger elog = Logging::getLogger("event");
 PrintLogger mlog = Logging::getLogger("main");
@@ -61,8 +61,14 @@ int main(int argc, char* argv[])
 {
     argparse::ArgumentParser program("camera-controller");
 
-    program.add_argument("-l", "--log-sink")
-        .help("ip_address:port of log sink");
+    program.add_argument("-n", "--network_log_sink")
+        .help("ip_address:port of network log sink");
+
+    program.add_argument("-f", "--file_log_sink").help("File for file log sink");
+
+    program.add_argument("-d", "--download_dir")
+        .default_value(".")
+        .help("Directory where to save downloaded photos");
 
     try
     {
@@ -76,13 +82,14 @@ int main(int argc, char* argv[])
         std::exit(1);
     }
 
-    if (auto fn = program.present("-l"))
+    if (auto fn = program.present("-n"))
     {
         string ip;
         uint16_t port;
         if (scn::scan(*fn, "{:[\\d.]}:{}", ip, port))
         {
-            LOG_DEBUG(mlog.getChild("arg_parse"), "Log sink = {}:{}", ip, port);
+            LOG_DEBUG(mlog.getChild("arg_parse"), "Network Log sink = {}:{}",
+                      ip, port);
             Logging::addLogSink(make_shared<TcpLogSink>(ip, port));
         }
         else
@@ -96,25 +103,53 @@ int main(int argc, char* argv[])
         LOG_DEBUG(mlog, "No log sink!");
     }
 
+    if (auto fn = program.present("-f"))
+    {
+        LOG_DEBUG(mlog.getChild("arg_parse"), "File Log sink = {}", *fn);
+        try
+        {
+            Logging::addLogSink(make_shared<FileLogSink>(*fn));
+        }
+        catch (std::system_error& se)
+        {
+            LOG_ERR(mlog, "Cannot creadte file log sink: {}", se.what());
+            std::exit(1);
+        }
+    }
+    else
+    {
+        LOG_DEBUG(mlog, "No log sink!");
+    }
+
+    string dir = program.get<string>("-d");
+
+    LOG_DEBUG(mlog.getChild("arg_parse"), "File Log sink = {}", dir);
+    path p{dir};
+    if(!is_directory(p))
+    {
+        LOG_ERR(mlog, "{} is not a directory", dir);
+        std::exit(1);
+    }
+    
+
     sBroker.start();
     EventSniffer sniffer{sEventBroker, &printEvent};
-
-    CameraController camera;
-    camera.start();
-    
-    sBroker.post(EventCameraCmdConnect{}, TOPIC_CAMERA_CMD);
-
-    CLI cli{};
-    cli.start();
-
     CommManager comm(60099);
     // UDPEchoServer echo("0.0.0.0", 60050, false);
 
     ModeController mode_ctrl{};
     Intervalometer intervalometer{};
 
+    CameraController camera{dir};
+
     mode_ctrl.start();
     intervalometer.start();
+    camera.start();
+
+    sBroker.post(EventCameraCmdConnect{}, TOPIC_CAMERA_CMD);
+
+    CLI cli{};
+    cli.start();
 
     for (;;)
         sleep_for(seconds(10));

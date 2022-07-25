@@ -34,11 +34,16 @@ CommManager::CommManager(uint16_t port)
     : server(port, std::bind(&CommManager::messageHandler, this, _1))
 {
     sEventBroker.subscribe(this, TOPIC_CAMERA_CONFIG);
+    sEventBroker.subscribe(this, TOPIC_CAMERA_EVENT);
+    sEventBroker.subscribe(this, TOPIC_MODE_STATE);
 }
 
 CommManager::~CommManager() { sEventBroker.unsubscribe(this); }
 
-void CommManager::doPostEvent(const EventPtr& ev) { server.send(ev->to_json()); }
+void CommManager::doPostEvent(const EventPtr& ev)
+{
+    server.send(ev->to_json());
+}
 
 void CommManager::messageHandler(const nlohmann::json& j)
 {
@@ -46,7 +51,15 @@ void CommManager::messageHandler(const nlohmann::json& j)
     {
         if (j.at("event_id").is_number_unsigned())
         {
-            sBroker.post(jsonToEvent(j), TOPIC_CAMERA_CMD);
+            try
+            {
+                sBroker.post(jsonToEvent(j), TOPIC_REMOTE_CMD);
+            }
+            catch (nlohmann::json::exception& jsone)
+            {
+                LOG_ERR(log, "Could not parse JSON to Event: what: {} json: {}",
+                        jsone.what(), j.dump());
+            }
         }
         else
         {

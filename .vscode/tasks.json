@@ -6,7 +6,7 @@
         {
             "type": "shell",
             "label": "BUILD",
-            "command": "meson compile",
+            "command": "meson compile -j4",
             "options": {
                 "cwd": "${workspaceFolder}/builddir/debug"
             },
@@ -25,7 +25,7 @@
         {
             "type": "shell",
             "label": "BUILD CROSS",
-            "command": "meson compile",
+            "command": "meson compile -j4",
             "options": {
                 "cwd": "${workspaceFolder}/builddir/arm"
             },
@@ -44,7 +44,7 @@
             "type": "shell",
             "label": "RUN cc3",
             "command": "sudo",
-            "args": ["${workspaceFolder}/builddir/debug/cc3",  "-l",  "192.168.1.101:19996"],
+            "args": ["${workspaceFolder}/builddir/debug/cc3",  "-n",  "192.168.1.101:19997"],
             "group": "test"
         },
         {
@@ -83,7 +83,7 @@
         {
             "type": "shell",
             "label": "RASP RUN cc3",
-            "command": "ssh -t -t luca@192.168.1.113 \"~/cc3/cc3 -l 192.168.1.101:19996\"",
+            "command": "ssh -t -t luca@192.168.1.113 \"~/cc3/cc3 -n 192.168.1.101:19996\"",
             "group": "test"
         },
         {

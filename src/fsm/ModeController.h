@@ -137,7 +137,7 @@ private:
         switch (ev->getID())
         {
             case EventSMEntry::id:
-                current_mode = "none";
+                current_mode = "Manual";
                 sBroker.post(EventValueCurrentMode{current_mode},
                              TOPIC_MODE_STATE);
                 LOG_STATE(slog, "ENTRY");
@@ -149,7 +149,7 @@ private:
                 break;
             case EventModeIntervalometer::id:
             {
-                current_mode = "intervalometer";
+                current_mode = "Intervalometer";
                 sBroker.post(EventValueCurrentMode{current_mode},
                              TOPIC_MODE_STATE);
                 auto ie =
@@ -197,7 +197,7 @@ private:
 
 private:
     EventPassThrough pass_through{};
-    string current_mode = "none";
+    string current_mode = "Manual";
 
     PrintLogger log = Logging::getLogger("ModCtrl");
 };

@@ -19,6 +19,7 @@ EventCameraCmdDownload_Internal
 
 EventCameraConnected
 EventCameraReady
+EventCameraBusyOrError
 EventCameraDisconnected
 EventCameraConnectionError
 EventCameraError
@@ -33,6 +34,7 @@ EventCameraCmdLowLatency
 EventCameraCaptureDone
 {
     bool downloaded
+    string download_dir
     string file
 }
 
@@ -41,6 +43,7 @@ EventCameraControllerState
 {
     string state
     bool camera_connected
+    bool download_enabled
 }
 
 

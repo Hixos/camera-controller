@@ -43,7 +43,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/builddir/debug/cc3",
-            "args": [],
+            "args": ["-n", "192.168.1.101:19997"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
@@ -60,6 +60,9 @@
                     "description": "Set Disassembly Flavor to Intel",
                     "text": "-gdb-set disassembly-flavor intel",
                     "ignoreFailures": true
+                },
+                {
+                    "text": "set target-async off"
                 }
             ]
         },

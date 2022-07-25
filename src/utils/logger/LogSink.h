@@ -23,9 +23,11 @@
 #pragma once
 
 #include <mutex>
+#include <string>
 
 #include "PrintLoggerData.h"
 
+using std::string;
 using std::mutex;
 
 class LogSink
@@ -83,11 +85,9 @@ private:
 class FileLogSink : public LogSink
 {
 public:
-    FileLogSink() {}
+    FileLogSink(string file);
+    ~FileLogSink();
 
-    explicit FileLogSink(FILE* f) : f(f) {}
-
-    void setFile(FILE* f_) { f = f_; }
     void setFormatString(const std::string& format) { this->format = format; }
 
 protected:

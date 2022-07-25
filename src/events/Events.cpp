@@ -26,7 +26,7 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-24 18:16:33.458843
+// Autogen date:    2022-07-25 15:34:40.344329
 
 #include "Events.h"
 
@@ -254,6 +254,24 @@ nlohmann::json EventCameraReady::to_json() const
     return nlohmann::json(*this);
 }
 
+EventCameraBusyOrError::EventCameraBusyOrError() : Event(id) {}
+
+string EventCameraBusyOrError::name() const { return "EventCameraBusyOrError"; }
+
+string EventCameraBusyOrError::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraBusyOrError::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
 EventCameraDisconnected::EventCameraDisconnected() : Event(id) {}
 
 string EventCameraDisconnected::name() const
@@ -356,8 +374,9 @@ nlohmann::json EventCameraCmdLowLatency::to_json() const
     return nlohmann::json(*this);
 }
 
-EventCameraCaptureDone::EventCameraCaptureDone(bool downloaded, string file)
-    : Event(id), downloaded(downloaded), file(file)
+EventCameraCaptureDone::EventCameraCaptureDone(bool downloaded,
+                                               string download_dir, string file)
+    : Event(id), downloaded(downloaded), download_dir(download_dir), file(file)
 {
 }
 
@@ -399,8 +418,10 @@ nlohmann::json EventGetCameraControllerState::to_json() const
 }
 
 EventCameraControllerState::EventCameraControllerState(string state,
-                                                       bool camera_connected)
-    : Event(id), state(state), camera_connected(camera_connected)
+                                                       bool camera_connected,
+                                                       bool download_enabled)
+    : Event(id), state(state), camera_connected(camera_connected),
+      download_enabled(download_enabled)
 {
 }
 
@@ -1519,6 +1540,10 @@ EventPtr jsonToEvent(const nlohmann::json& j)
             break;
         case EventCameraReady::id:
             return make_shared<EventCameraReady>(j.get<EventCameraReady>());
+            break;
+        case EventCameraBusyOrError::id:
+            return make_shared<EventCameraBusyOrError>(
+                j.get<EventCameraBusyOrError>());
             break;
         case EventCameraDisconnected::id:
             return make_shared<EventCameraDisconnected>(

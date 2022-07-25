@@ -376,7 +376,7 @@ protected:
      */
     bool hasDeferred()
     {
-        return !deferred_events.empty();
+        return !deferred_events.isEmpty();
     }
 
     /**

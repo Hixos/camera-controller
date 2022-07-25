@@ -27,6 +27,9 @@
 #include <fmt/core.h>
 #include <fmt/format.h>
 
+#include <cerrno>
+#include <stdexcept>
+
 using std::lock_guard;
 using std::mutex;
 
@@ -36,6 +39,20 @@ void LogSink::log(const LogRecord& record)
     {
         logImpl(record);
     }
+}
+
+FileLogSink::FileLogSink(string file)
+{
+    f = fopen(file.c_str(), "a");
+    if (!f)
+        throw std::system_error(errno, std::generic_category(),
+                                "Cannot open file " + file);
+}
+
+FileLogSink::~FileLogSink()
+{
+    if (f)
+        fclose(f);
 }
 
 void FileLogSink::logImpl(const LogRecord& record)

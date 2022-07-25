@@ -65,6 +65,8 @@ State CameraController::stateSuper(const EventPtr& ev)
         {
             auto d_ev = dynamic_pointer_cast<const EventCameraCmdDownload>(ev);
             do_download = d_ev->download;
+            LOG_INFO(slog, "Camera download enabled={}", do_download);
+            getState();
             break;
         }
         case EventCameraCmdLowLatency::id:
@@ -172,11 +174,13 @@ State CameraController::stateReady(const EventPtr& ev)
                     checkConnection();
                 }
             }
+            processDeferred();
 
             break;
         case EventSMInit::id:
             break;
         case EventSMExit::id:
+            sEventBroker.post(EventCameraBusyOrError{}, TOPIC_CAMERA_EVENT);
             LOG_STATE(slog, "EXIT");
             break;
         case EventConfigGetAll::id:
@@ -214,14 +218,17 @@ State CameraController::handleConfigGetSet(const EventPtr& ev)
 
 State CameraController::stateConnectionError(const EventPtr& ev)
 {
-    auto slog      = log.getChild("ConnErr");
-    State retState = HANDLED;
+    auto slog                           = log.getChild("ConnErr");
+    State retState                      = HANDLED;
+    static constexpr int RETRY_DELAY_MS = 2000;
     switch (ev->getID())
     {
         case EventSMEntry::id:
             onStateChanged(CCState::CONNECTION_ERROR);
             sEventBroker.post(EventCameraConnectionError{}, TOPIC_CAMERA_EVENT);
             LOG_STATE(slog, "ENTRY");
+            state_error_recover_event_id = sEventBroker.postDelayed(
+                EventCameraCmdRecoverError{}, TOPIC_CAMERA_CMD, RETRY_DELAY_MS);
             break;
         case EventSMInit::id:
             break;
@@ -234,6 +241,16 @@ State CameraController::stateConnectionError(const EventPtr& ev)
             else
                 retState = transition(&CameraController::stateConnectionError);
 
+            break;
+        case EventCameraCmdRecoverError::id:
+            if (connect())
+            {
+                retState = transition(&CameraController::stateConnected);
+            }
+            else
+            {
+                retState = transition(&CameraController::stateConnectionError);
+            }
             break;
         default:
             retState = tran_super(&CameraController::stateSuper);
@@ -255,6 +272,7 @@ State CameraController::stateError(const EventPtr& ev)
             sEventBroker.post(EventCameraError{}, TOPIC_CAMERA_EVENT);
             state_error_recover_event_id = sEventBroker.postDelayed(
                 EventCameraCmdRecoverError{}, TOPIC_CAMERA_CMD, RETRY_DELAY_MS);
+            processDeferred();
             break;
         case EventSMInit::id:
             break;
@@ -277,9 +295,7 @@ State CameraController::stateError(const EventPtr& ev)
             }
             else
             {
-                state_error_recover_event_id =
-                    sEventBroker.postDelayed(EventCameraCmdRecoverError{},
-                                             TOPIC_CAMERA_CMD, RETRY_DELAY_MS);
+                retState = transition(&CameraController::stateError);
             }
             break;
         default:
@@ -330,7 +346,7 @@ State CameraController::stateCapturing(const EventPtr& ev)
             {
                 LOG_ERR(slog, "Camera capture error (GPhoto): {} = {}",
                         gpe.error, gpe.what());
-               checkConnection();
+                checkConnection();
             }
             catch (std::exception& e)
             {
@@ -340,7 +356,8 @@ State CameraController::stateCapturing(const EventPtr& ev)
             break;
         }
         default:
-            retState = tran_super(&CameraController::stateConnected);
+            if(!deferSetters(ev))
+                retState = tran_super(&CameraController::stateConnected);
             break;
     }
     return retState;
@@ -370,9 +387,10 @@ State CameraController::stateDownloading(const EventPtr& ev)
                                     path(download_dir)
                                         .append(last_capture_path.name)
                                         .generic_string());
+
                 sEventBroker.post(
                     EventCameraCaptureDone{
-                        true, download_dir + last_capture_path.name},
+                        true, download_dir, last_capture_path.name},
                     TOPIC_CAMERA_EVENT);
                 retState = transition(&CameraController::stateConnected);
             }
@@ -390,7 +408,8 @@ State CameraController::stateDownloading(const EventPtr& ev)
             break;
         }
         default:
-            retState = tran_super(&CameraController::stateConnected);
+            if(!deferSetters(ev))
+                retState = tran_super(&CameraController::stateConnected);
             break;
     }
     return retState;
@@ -411,6 +430,16 @@ bool CameraController::connect()
     catch (std::exception& e)
     {
         LOG_ERR(log, "Camera connection error: {}", e.what());
+    }
+    return false;
+}
+
+bool CameraController::deferSetters(const EventPtr& ev)
+{
+    if (config_setters.count(ev->getID()) > 0)
+    {
+        defer(ev);
+        return true;
     }
     return false;
 }
@@ -503,6 +532,7 @@ void CameraController::getState()
     EventCameraControllerState e;
     e.camera_connected = camera_connected;
     e.state            = state_names.at(state);
+    e.download_enabled = do_download;
 
     sEventBroker.post(std::move(e), TOPIC_CAMERA_CONFIG);
 }
@@ -511,7 +541,9 @@ void CameraController::checkConnection()
 {
     try
     {
-        camera.getShutterSpeed();
+        auto ss = camera.getShutterSpeed().shutter_speed;
+        camera.setShutterSpeed(1000000);
+        camera.setShutterSpeed(ss);
         return;
     }
     catch (gphotow::GPhotoError& gpe)

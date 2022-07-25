@@ -79,6 +79,7 @@ private:
     bool connect();
     void checkConnection();
 
+    bool deferSetters(const EventPtr& ev);
     State handleConfigGetSet(const EventPtr& ev);
     ConfigEventHandleResult getConfig(const EventPtr& ev);
     ConfigEventHandleResult setConfig(const EventPtr& ev);

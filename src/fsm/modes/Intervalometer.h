@@ -42,6 +42,7 @@ public:
     {
         sEventBroker.subscribe(this, TOPIC_MODE_FSM);
         sEventBroker.subscribe(this, TOPIC_REMOTE_CMD);
+        sEventBroker.subscribe(this, TOPIC_CAMERA_EVENT);
     }
 
     ~Intervalometer() { sEventBroker.unsubscribe(this); }
@@ -62,7 +63,7 @@ private:
                 LOG_STATE(slog, "ENTRY");
                 break;
             case EventSMInit::id:
-                retState = transition(&Intervalometer::stateReady);
+                retState = transition(&Intervalometer::stateCameraNotReady);
                 break;
             case EventSMExit::id:
                 LOG_STATE(slog, "EXIT");
@@ -86,15 +87,16 @@ private:
         switch (ev->getID())
         {
             case EventSMEntry::id:
-                onStateChange("ready");
-                sEventBroker.unsubscribe(this, TOPIC_CAMERA_EVENT);
+                onStateChange("Ready");
                 LOG_STATE(slog, "ENTRY");
                 break;
             case EventSMInit::id:
                 break;
             case EventSMExit::id:
-                sEventBroker.subscribe(this, TOPIC_CAMERA_EVENT);
                 LOG_STATE(slog, "EXIT");
+                break;
+            case EventCameraBusyOrError::id:
+                retState = transition(&Intervalometer::stateCameraNotReady);
                 break;
             case EventIntervalometerStart::id:
             {
@@ -104,6 +106,33 @@ private:
                 total_captures = s->total_captures;
                 num_captures   = 0;
                 retState       = transition(&Intervalometer::stateCapturing);
+                break;
+            }
+            default:
+                retState = tran_super(&Intervalometer::stateSuper);
+                break;
+        }
+        return retState;
+    }
+
+    State stateCameraNotReady(const EventPtr& ev)
+    {
+        auto slog      = log.getChild("CamNotRdy");
+        State retState = State::HANDLED;
+        switch (ev->getID())
+        {
+            case EventSMEntry::id:
+                onStateChange("CamNotReady");
+                LOG_STATE(slog, "ENTRY");
+                break;
+            case EventSMInit::id:
+                break;
+            case EventSMExit::id:
+                LOG_STATE(slog, "EXIT");
+                break;
+            case EventCameraReady::id:
+            {
+                retState = transition(&Intervalometer::stateReady);
                 break;
             }
             default:
@@ -147,7 +176,7 @@ private:
         {
             case EventSMEntry::id:
                 deadline_expired = false;
-                onStateChange("capturing");
+                onStateChange("Capturing");
                 sEventBroker.post(EventCameraCmdCapture{}, TOPIC_CAMERA_CMD);
                 if (interval > 0)
                 {
@@ -165,9 +194,11 @@ private:
                 ++num_captures;
                 LOG_INFO(slog, "Intervalometer progress: {}/{}", num_captures,
                          total_captures);
-                if (num_captures >= total_captures && total_captures > 0)
+                if (stop_cmd_received ||
+                    (num_captures >= total_captures && total_captures > 0))
                 {
-                    retState = transition(&Intervalometer::stateReady);
+                    stop_cmd_received = false;
+                    retState          = transition(&Intervalometer::stateReady);
                     break;
                 }
                 if (interval < 0 || deadline_expired)
@@ -186,6 +217,9 @@ private:
                 history  = &Intervalometer::stateCapturing;
                 retState = transition(&Intervalometer::stateError);
                 break;
+            case EventModeStop::id:
+                stop_cmd_received = true;
+                break;
             default:
                 retState = tran_super(&Intervalometer::stateRunning);
                 break;
@@ -200,7 +234,7 @@ private:
         switch (ev->getID())
         {
             case EventSMEntry::id:
-                onStateChange("waiting");
+                onStateChange("Waiting");
                 LOG_STATE(slog, "ENTRY");
                 break;
             case EventSMInit::id:
@@ -230,7 +264,7 @@ private:
         {
             case EventSMEntry::id:
                 LOG_STATE(slog, "ENTRY");
-                onStateChange("error");
+                onStateChange("Error");
                 break;
             case EventSMInit::id:
                 break;
@@ -245,6 +279,9 @@ private:
                     retState = transition(&Intervalometer::stateCapturing);
                 else
                     retState = transition(history);
+                break;
+            case EventModeStop::id:
+                retState = transition(&Intervalometer::stateCameraNotReady);
                 break;
             default:
                 retState = tran_super(&Intervalometer::stateRunning);
@@ -266,14 +303,15 @@ private:
         this->state = state;
         onStateChange();
     }
-    string state           = "ready";
+    string state           = "Ready";
     int32_t interval       = 0;
     int32_t num_captures   = 0;
     int32_t total_captures = 0;
 
     State (Intervalometer::*history)(const EventPtr& ev);
 
-    bool deadline_expired = false;
+    bool deadline_expired  = false;
+    bool stop_cmd_received = false;
 
     PrintLogger log = Logging::getLogger("Interv");
 };
