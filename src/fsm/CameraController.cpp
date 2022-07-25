@@ -338,7 +338,7 @@ State CameraController::stateCapturing(const EventPtr& ev)
                     LOG_DEBUG(slog, "Transitioning to connected state");
 
                     retState = transition(&CameraController::stateConnected);
-                    sEventBroker.post(EventCameraCaptureDone{false, ""},
+                    sEventBroker.post(EventCameraCaptureDone{false, "", ""},
                                       TOPIC_CAMERA_EVENT);
                 }
             }
