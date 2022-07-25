@@ -24,12 +24,13 @@
 
 #include <argparse/argparse.hpp>
 #include <chrono>
+#include <filesystem>
 #include <iostream>
 #include <memory>
-#include <filesystem>
 #include <thread>
 
 #include "EventBroker.h"
+#include "JsonLogSink.h"
 #include "TcpLogSink.h"
 #include "comm/CommManager.h"
 #include "comm/UDPEchoServer.h"
@@ -50,6 +51,8 @@ using namespace std::filesystem;
 PrintLogger elog = Logging::getLogger("event");
 PrintLogger mlog = Logging::getLogger("main");
 
+void initLogger(argparse::ArgumentParser& program);
+
 void printEvent(const EventPtr& ev, uint8_t topic)
 {
 
@@ -64,7 +67,10 @@ int main(int argc, char* argv[])
     program.add_argument("-n", "--network_log_sink")
         .help("ip_address:port of network log sink");
 
-    program.add_argument("-f", "--file_log_sink").help("File for file log sink");
+    program.add_argument("-f", "--file_log_sink")
+        .help("File for file log sink");
+    program.add_argument("-j", "--json_log_sink")
+        .help("File for json log sink");
 
     program.add_argument("-d", "--download_dir")
         .default_value(".")
@@ -82,55 +88,18 @@ int main(int argc, char* argv[])
         std::exit(1);
     }
 
-    if (auto fn = program.present("-n"))
-    {
-        string ip;
-        uint16_t port;
-        if (scn::scan(*fn, "{:[\\d.]}:{}", ip, port))
-        {
-            LOG_DEBUG(mlog.getChild("arg_parse"), "Network Log sink = {}:{}",
-                      ip, port);
-            Logging::addLogSink(make_shared<TcpLogSink>(ip, port));
-        }
-        else
-        {
-            LOG_ERR(mlog, "Invalid ip:port argument: {}", *fn);
-            std::exit(1);
-        }
-    }
-    else
-    {
-        LOG_DEBUG(mlog, "No log sink!");
-    }
-
-    if (auto fn = program.present("-f"))
-    {
-        LOG_DEBUG(mlog.getChild("arg_parse"), "File Log sink = {}", *fn);
-        try
-        {
-            Logging::addLogSink(make_shared<FileLogSink>(*fn));
-        }
-        catch (std::system_error& se)
-        {
-            LOG_ERR(mlog, "Cannot creadte file log sink: {}", se.what());
-            std::exit(1);
-        }
-    }
-    else
-    {
-        LOG_DEBUG(mlog, "No log sink!");
-    }
+    initLogger(program);
 
     string dir = program.get<string>("-d");
 
-    LOG_DEBUG(mlog.getChild("arg_parse"), "File Log sink = {}", dir);
     path p{dir};
-    if(!is_directory(p))
+    if (!is_directory(p))
     {
         LOG_ERR(mlog, "{} is not a directory", dir);
         std::exit(1);
     }
     
+    LOG_DEBUG(mlog.getChild("arg_parse"), "Download directory = {}", dir);
 
     sBroker.start();
     EventSniffer sniffer{sEventBroker, &printEvent};
@@ -154,4 +123,64 @@ int main(int argc, char* argv[])
     for (;;)
         sleep_for(seconds(10));
     return 0;
+}
+
+void initLogger(argparse::ArgumentParser& program)
+{
+    if (auto fn = program.present("-n"))
+    {
+        string ip;
+        uint16_t port;
+        if (scn::scan(*fn, "{:[\\d.]}:{}", ip, port))
+        {
+            LOG_DEBUG(mlog.getChild("arg_parse"), "Network Log sink = {}:{}",
+                      ip, port);
+            Logging::addLogSink(make_shared<TcpLogSink>(ip, port));
+        }
+        else
+        {
+            LOG_ERR(mlog, "Invalid ip:port argument: {}", *fn);
+            std::exit(1);
+        }
+    }
+    else
+    {
+        LOG_DEBUG(mlog, "No network log sink!");
+    }
+
+    if (auto fn = program.present("-f"))
+    {
+        LOG_DEBUG(mlog.getChild("arg_parse"), "File Log sink = {}", *fn);
+        try
+        {
+            Logging::addLogSink(make_shared<FileLogSink>(*fn));
+        }
+        catch (std::system_error& se)
+        {
+            LOG_ERR(mlog, "Cannot creadte file log sink: {}", se.what());
+            std::exit(1);
+        }
+    }
+    else
+    {
+        LOG_DEBUG(mlog, "No file log sink!");
+    }
+
+    if (auto fn = program.present("-j"))
+    {
+        LOG_DEBUG(mlog.getChild("arg_parse"), "JSON Log sink = {}", *fn);
+        try
+        {
+            Logging::addLogSink(make_shared<JsonLogSink>(*fn));
+        }
+        catch (std::system_error& se)
+        {
+            LOG_ERR(mlog, "Cannot creadte JSON log sink: {}", se.what());
+            std::exit(1);
+        }
+    }
+    else
+    {
+        LOG_DEBUG(mlog, "No file log sink!");
+    }
 }

@@ -41,7 +41,7 @@ void LogSink::log(const LogRecord& record)
     }
 }
 
-FileLogSink::FileLogSink(string file)
+BaseFileLogSink::BaseFileLogSink(string file)
 {
     f = fopen(file.c_str(), "a");
     if (!f)
@@ -49,29 +49,37 @@ FileLogSink::FileLogSink(string file)
                                 "Cannot open file " + file);
 }
 
-FileLogSink::~FileLogSink()
+BaseFileLogSink::~BaseFileLogSink()
 {
     if (f)
         fclose(f);
 }
 
-void FileLogSink::logImpl(const LogRecord& record)
+void BaseFileLogSink::logImpl(const LogRecord& record)
+{
+    string r = recordToString(record);
+    {
+        lock_guard<mutex> guard(mutex_file);
+        fwrite(r.c_str(), sizeof(char), r.length(), f);
+    }
+}
+
+FileLogSink::FileLogSink(string file) : BaseFileLogSink(file)
+{
+}
+
+
+string FileLogSink::recordToString(const LogRecord& record)
 {
     using namespace fmt::literals;
-    // const auto tsStr =
-    //     fmt::format("{::%Y-%m-%d %H:%M:%S}", fmt::localtime(record.created));
 
     string l = fmt::format(format, fmt::localtime(record.created),
                            "file"_a = record.file, "line"_a = record.line,
                            "fun"_a  = record.function,
                            "lvl"_a  = getLevelString(record.level),
                            "name"_a = record.name, "msg"_a = record.message);
-    // string l = fmt::format("{} {} {}", getLevelString(record.level),
-    // record.name, record.message);
-    {
-        lock_guard<mutex> guard(mutex_file);
-        fwrite(l.c_str(), sizeof(char), l.length(), f);
-    }
+    
+    return l;
 }
 
 void StdoutLogSink::logImpl(const LogRecord& record)
