@@ -220,7 +220,7 @@ State CameraController::stateConnectionError(const EventPtr& ev)
 {
     auto slog                           = log.getChild("ConnErr");
     State retState                      = HANDLED;
-    static constexpr int RETRY_DELAY_MS = 2000;
+    static constexpr int RETRY_DELAY_MS = 5000;
     switch (ev->getID())
     {
         case EventSMEntry::id:
@@ -263,7 +263,7 @@ State CameraController::stateError(const EventPtr& ev)
 {
     auto slog                           = log.getChild("Error");
     State retState                      = HANDLED;
-    static constexpr int RETRY_DELAY_MS = 2000;
+    static constexpr int RETRY_DELAY_MS = 5000;
     switch (ev->getID())
     {
         case EventSMEntry::id:
