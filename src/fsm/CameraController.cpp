@@ -163,10 +163,12 @@ State CameraController::stateReady(const EventPtr& ev)
     switch (ev->getID())
     {
         case EventSMEntry::id:
+            LOG_STATE(slog, "ENTRY");
             onStateChanged(CCState::READY);
+            processDeferred();
+            
             sEventBroker.post(EventCameraReady{}, TOPIC_CAMERA_EVENT);
 
-            LOG_STATE(slog, "ENTRY");
             if (!low_latency)
             {
                 if (!getAllConfig())
@@ -174,8 +176,6 @@ State CameraController::stateReady(const EventPtr& ev)
                     checkConnection();
                 }
             }
-            processDeferred();
-
             break;
         case EventSMInit::id:
             break;
@@ -198,23 +198,7 @@ State CameraController::stateReady(const EventPtr& ev)
     }
     return retState;
 }
-State CameraController::handleConfigGetSet(const EventPtr& ev)
-{
-    ConfigEventHandleResult s = getConfig(ev);
-    if (s == ConfigEventHandleResult::UNHANDLED)
-        s = setConfig(ev);
 
-    switch (s)
-    {
-        case ConfigEventHandleResult::HANDLED:
-            return State::HANDLED;
-        case ConfigEventHandleResult::ERROR:
-            checkConnection();
-            return State::HANDLED;
-        default:
-            return tran_super(&CameraController::stateConnected);
-    }
-}
 
 State CameraController::stateConnectionError(const EventPtr& ev)
 {
@@ -330,14 +314,11 @@ State CameraController::stateCapturing(const EventPtr& ev)
                          last_capture_path.getPath());
                 if (do_download)
                 {
-                    LOG_DEBUG(slog, "Transitioning to download state");
                     retState = transition(&CameraController::stateDownloading);
                 }
                 else
                 {
-                    LOG_DEBUG(slog, "Transitioning to connected state");
-
-                    retState = transition(&CameraController::stateConnected);
+                    retState = transition(&CameraController::stateReady);
                     sEventBroker.post(EventCameraCaptureDone{false, "", ""},
                                       TOPIC_CAMERA_EVENT);
                 }
@@ -346,12 +327,12 @@ State CameraController::stateCapturing(const EventPtr& ev)
             {
                 LOG_ERR(slog, "Camera capture error (GPhoto): {} = {}",
                         gpe.error, gpe.what());
-                checkConnection();
+                retState = transition(&CameraController::stateError);
             }
             catch (std::exception& e)
             {
                 LOG_ERR(slog, "Camera capture error: {}", e.what());
-                checkConnection();
+                retState = transition(&CameraController::stateError);
             }
             break;
         }
@@ -398,12 +379,12 @@ State CameraController::stateDownloading(const EventPtr& ev)
             {
                 LOG_ERR(slog, "Camera download error (GPhoto): {} = {}",
                         gpe.error, gpe.what());
-                checkConnection();
+                retState = transition(&CameraController::stateError);
             }
             catch (std::exception& e)
             {
                 LOG_ERR(slog, "Camera download error: {}", e.what());
-                checkConnection();
+                retState = transition(&CameraController::stateError);
             }
             break;
         }
@@ -413,6 +394,24 @@ State CameraController::stateDownloading(const EventPtr& ev)
             break;
     }
     return retState;
+}
+
+State CameraController::handleConfigGetSet(const EventPtr& ev)
+{
+    ConfigEventHandleResult s = getConfig(ev);
+    if (s == ConfigEventHandleResult::UNHANDLED)
+        s = setConfig(ev);
+
+    switch (s)
+    {
+        case ConfigEventHandleResult::HANDLED:
+            return State::HANDLED;
+        case ConfigEventHandleResult::ERROR:
+            checkConnection();
+            return State::HANDLED;
+        default:
+            return tran_super(&CameraController::stateConnected);
+    }
 }
 
 bool CameraController::connect()

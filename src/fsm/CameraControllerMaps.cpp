@@ -103,6 +103,12 @@ const map<uint16_t, function<void(CameraController&)>>
                  EventConfigValueCaptureTarget{cc.camera.getCaptureTarget()},
                  TOPIC_CAMERA_CONFIG);
          }},
+        {EventConfigGetExposureProgram::id,
+         [](CameraController& cc) {
+             sEventBroker.post(
+                 EventConfigValueExposureProgram{cc.camera.getExposureProgram()},
+                 TOPIC_CAMERA_CONFIG);
+         }},
         {EventConfigGetLightMeter::id, [](CameraController& cc) {
              float val                      = cc.camera.getLightMeter();
              CameraWidgetRange::Range range = cc.camera.getLightMeterRange();
