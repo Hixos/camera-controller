@@ -50,7 +50,7 @@ int main()
     cli.start();
 
     PrintLogger log = Logging::getLogger("main");
-    Logging::addLogSink(make_shared<TcpLogSink>("192.168.1.101", 19996));
+    Logging::addLogSink(make_shared<TcpLogSink>("192.168.1.101", 60099));
     sBroker.start();
 
     EventSniffer sniffer{sEventBroker, &printEvent};

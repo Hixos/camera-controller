@@ -33,7 +33,6 @@
 #include "JsonLogSink.h"
 #include "TcpLogSink.h"
 #include "comm/CommManager.h"
-#include "comm/UDPEchoServer.h"
 #include "fsm/CameraController.h"
 #include "fsm/ModeController.h"
 #include "fsm/modes/Intervalometer.h"
@@ -104,7 +103,6 @@ int main(int argc, char* argv[])
     sBroker.start();
     EventSniffer sniffer{sEventBroker, &printEvent};
     CommManager comm(60099);
-    // UDPEchoServer echo("0.0.0.0", 60050, false);
 
     ModeController mode_ctrl{};
     Intervalometer intervalometer{};

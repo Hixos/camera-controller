@@ -25,7 +25,6 @@ src = [
        'src/utils/debug/cli.cpp',
        'src/comm/JsonTcpServer.cpp',
        'src/comm/CommManager.cpp',
-       'src/comm/UDPEchoServer.cpp',
        'src/fsm/CameraControllerMaps.cpp'
        ]
 
