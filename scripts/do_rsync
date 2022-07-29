@@ -1,0 +1,13 @@
+#!/bin/bash
+
+sudo mkdir rootfs
+sudo mkdir rootfs/usr
+sudo mkdir rootfs/opt
+
+rsync -avz --rsync-path="sudo rsync" --delete -e "ssh -i /home/luca/.ssh/id_ed25519" luca@$1:/lib rootfs
+rsync -avz --rsync-path="sudo rsync" --delete -e "ssh -i /home/luca/.ssh/id_ed25519" luca@$1:/usr/include rootfs/usr
+rsync -avz --rsync-path="sudo rsync" --delete -e "ssh -i /home/luca/.ssh/id_ed25519" luca@$1:/usr/lib rootfs/usr
+rsync -avz --rsync-path="sudo rsync" --delete -e "ssh -i /home/luca/.ssh/id_ed25519" luca@$1:/usr/local/lib rootfs/usr/local
+rsync -avz --rsync-path="sudo rsync" --delete -e "ssh -i /home/luca/.ssh/id_ed25519" luca@$1:/usr/local/include rootfs/usr/local
+rsync -avz --rsync-path="sudo rsync" --delete -e "ssh -i /home/luca/.ssh/id_ed25519" luca@$1:/opt/vc rootfs/opt
+sudo ./sysroot-relativelinks.py rootfs
