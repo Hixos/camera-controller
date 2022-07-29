@@ -27,4 +27,4 @@ Run `ps aux | grep gphoto` and kill the process using `sudo kill -9 <pid>`.
 See https://github.com/abhiTronix/raspberry-pi-cross-compilers
 
 ### Rsync sysroot
-Run `scripts/do_rsync` in a desired folder (eg. `/opt/cross-pi-gcc-10.3.0-1`)
+Run `scripts/do_rsync` in a desired folder (eg. `/opt/cross-pi-gcc-10.3.0-1`) (remember to update ssh username and key path)
