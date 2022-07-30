@@ -54,7 +54,6 @@ void initLogger(argparse::ArgumentParser& program);
 
 void printEvent(const EventPtr& ev, uint8_t topic)
 {
-
     LOG_EVENT(elog, "{} -> {}       {}", ev->name(), getTopicName(topic),
               ev->to_json().dump(-1));
 }

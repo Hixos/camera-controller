@@ -26,7 +26,7 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-25 15:34:40.344329
+// Autogen date:    2022-07-30 15:58:36.807033
 
 #include "Events.h"
 
@@ -44,7 +44,8 @@ const map<uint8_t, string> topic_string_map = {
     {TOPIC_REMOTE_CMD, "TOPIC_REMOTE_CMD"},
     {TOPIC_MODE_CONTROLLER, "TOPIC_MODE_CONTROLLER"},
     {TOPIC_MODE_FSM, "TOPIC_MODE_FSM"},
-    {TOPIC_MODE_STATE, "TOPIC_MODE_STATE"}};
+    {TOPIC_MODE_STATE, "TOPIC_MODE_STATE"},
+    {TOPIC_HEARTBEAT, "TOPIC_HEARTBEAT"}};
 
 const map<string, uint8_t> topic_id_map = {
     {"TOPIC_CAMERA_CONFIG", TOPIC_CAMERA_CONFIG},
@@ -53,7 +54,8 @@ const map<string, uint8_t> topic_id_map = {
     {"TOPIC_REMOTE_CMD", TOPIC_REMOTE_CMD},
     {"TOPIC_MODE_CONTROLLER", TOPIC_MODE_CONTROLLER},
     {"TOPIC_MODE_FSM", TOPIC_MODE_FSM},
-    {"TOPIC_MODE_STATE", TOPIC_MODE_STATE}};
+    {"TOPIC_MODE_STATE", TOPIC_MODE_STATE},
+    {"TOPIC_HEARTBEAT", TOPIC_HEARTBEAT}};
 
 string getTopicName(uint8_t topic)
 {
@@ -74,6 +76,54 @@ uint8_t getTopicID(string topic_str)
         return 255;
     }
 }
+
+EventHeartBeat::EventHeartBeat() : Event(id) {}
+
+string EventHeartBeat::name() const { return "EventHeartBeat"; }
+
+string EventHeartBeat::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventHeartBeat::to_json() const { return nlohmann::json(*this); }
+
+EventCmdRestart::EventCmdRestart() : Event(id) {}
+
+string EventCmdRestart::name() const { return "EventCmdRestart"; }
+
+string EventCmdRestart::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCmdRestart::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventCmdReboot::EventCmdReboot() : Event(id) {}
+
+string EventCmdReboot::name() const { return "EventCmdReboot"; }
+
+string EventCmdReboot::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCmdReboot::to_json() const { return nlohmann::json(*this); }
 
 EventCameraCmdConnect::EventCameraCmdConnect() : Event(id) {}
 
@@ -1506,6 +1556,15 @@ EventPtr jsonToEvent(const nlohmann::json& j)
 {
     switch (static_cast<uint16_t>(j.at("event_id")))
     {
+        case EventHeartBeat::id:
+            return make_shared<EventHeartBeat>(j.get<EventHeartBeat>());
+            break;
+        case EventCmdRestart::id:
+            return make_shared<EventCmdRestart>(j.get<EventCmdRestart>());
+            break;
+        case EventCmdReboot::id:
+            return make_shared<EventCmdReboot>(j.get<EventCmdReboot>());
+            break;
         case EventCameraCmdConnect::id:
             return make_shared<EventCameraCmdConnect>(
                 j.get<EventCameraCmdConnect>());

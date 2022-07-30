@@ -5,7 +5,11 @@ TOPIC_REMOTE_CMD
 TOPIC_MODE_CONTROLLER
 TOPIC_MODE_FSM
 TOPIC_MODE_STATE
+TOPIC_HEARTBEAT
 
+EventHeartBeat
+EventCmdRestart
+EventCmdReboot
 EventCameraCmdConnect
 EventCameraCmdDisconnect
 EventCameraCmdRecoverError

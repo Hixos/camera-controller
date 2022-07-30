@@ -36,6 +36,7 @@ CommManager::CommManager(uint16_t port)
     sEventBroker.subscribe(this, TOPIC_CAMERA_CONFIG);
     sEventBroker.subscribe(this, TOPIC_CAMERA_EVENT);
     sEventBroker.subscribe(this, TOPIC_MODE_STATE);
+    sEventBroker.subscribe(this, TOPIC_HEARTBEAT);
 }
 
 CommManager::~CommManager() { sEventBroker.unsubscribe(this); }

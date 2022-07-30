@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "events/EventBroker.h"
+#include "events/Events.h"
 
 using std::cout;
 using std::function;
@@ -70,7 +71,8 @@ public:
     {
         for (int t = 0; t <= 255; t++)
         {
-            sniffers.push_back(new Sniffer(*this, (uint8_t)t));
+            if(t != TOPIC_HEARTBEAT)
+                sniffers.push_back(new Sniffer(*this, (uint8_t)t));
         }
     }
 

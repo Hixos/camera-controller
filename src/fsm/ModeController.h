@@ -44,6 +44,7 @@ public:
     {
         sEventBroker.subscribe(this, TOPIC_REMOTE_CMD);
         sEventBroker.subscribe(this, TOPIC_MODE_CONTROLLER);
+        sEventBroker.subscribe(this, TOPIC_HEARTBEAT);
     }
 
     ~ModeController() { sEventBroker.unsubscribe(this); }
@@ -106,6 +107,7 @@ private:
         {
             case EventSMEntry::id:
                 LOG_STATE(slog, "ENTRY");
+                sBroker.postDelayed(EventHeartBeat{}, TOPIC_HEARTBEAT, 1000);
                 break;
             case EventSMInit::id:
                 retState = transition(&ModeController::stateModeSelection);
@@ -122,6 +124,9 @@ private:
                 break;
             case EventDisableEventPassThrough::id:
                 pass_through.setPassThough(false);
+                break;
+            case EventHeartBeat::id:
+                sBroker.postDelayed(EventHeartBeat{}, TOPIC_HEARTBEAT, 1000);
                 break;
             default:
                 retState = tran_super(&ModeController::Hsm_top);
