@@ -22,6 +22,9 @@
 
 #pragma once
 
+#include <sys/reboot.h>
+#include <unistd.h>
+
 #include <memory>
 #include <mutex>
 #include <string>
@@ -127,6 +130,16 @@ private:
                 break;
             case EventHeartBeat::id:
                 sBroker.postDelayed(EventHeartBeat{}, TOPIC_HEARTBEAT, 1000);
+                break;
+            case EventCmdRestart::id:
+                LOG_INFO(slog, "Restarting!");
+                exit(0);
+                break;
+            case EventCmdReboot::id:
+                LOG_INFO(slog, "Rebooting!");
+                sync();
+                reboot(RB_AUTOBOOT);
+                // exit(0);
                 break;
             default:
                 retState = tran_super(&ModeController::Hsm_top);
