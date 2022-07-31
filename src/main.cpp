@@ -20,6 +20,8 @@
  * THE SOFTWARE.
  */
 
+#include <fmt/chrono.h>
+#include <fmt/core.h>
 #include <scn/scn.h>
 
 #include <argparse/argparse.hpp>
@@ -42,6 +44,9 @@
 
 using std::make_shared;
 using std::shared_ptr;
+using std::chrono::duration;
+using std::chrono::duration_cast;
+using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 using std::chrono::seconds;
 using std::this_thread::sleep_for;
@@ -65,13 +70,11 @@ int main(int argc, char* argv[])
     program.add_argument("-n", "--network_log_sink")
         .help("ip_address:port of network log sink");
 
-    program.add_argument("-f", "--file_log_sink")
-        .help("File for file log sink");
-    program.add_argument("-j", "--json_log_sink")
-        .help("File for json log sink");
+    program.add_argument("-l", "--log-folder")
+        .help("Folder where to store logs");
 
     program.add_argument("-d", "--download_dir")
-        .default_value(".")
+        .default_value(string{"."})
         .help("Directory where to save downloaded photos");
 
     try
@@ -96,7 +99,7 @@ int main(int argc, char* argv[])
         LOG_ERR(mlog, "{} is not a directory", dir);
         std::exit(1);
     }
-    
+
     LOG_DEBUG(mlog.getChild("arg_parse"), "Download directory = {}", dir);
 
     sBroker.start();
@@ -145,30 +148,32 @@ void initLogger(argparse::ArgumentParser& program)
         LOG_DEBUG(mlog, "No network log sink!");
     }
 
-    if (auto fn = program.present("-f"))
+    if (auto fn = program.present("-l"))
     {
-        LOG_DEBUG(mlog.getChild("arg_parse"), "File Log sink = {}", *fn);
+        string datetime = fmt::format(
+            "{::%Y_%m_%d_%H_%M_%S}",
+            fmt::localtime(duration_cast<duration<int64_t>>(
+                               high_resolution_clock::now().time_since_epoch())
+                               .count()));
+        path folder{*fn};
+
+        LOG_DEBUG(mlog.getChild("arg_parse"), "Log folder:", *fn);
+
         try
         {
-            Logging::addLogSink(make_shared<FileLogSink>(*fn));
+            string file = (folder / ("log_" + datetime + ".txt")).string();
+            Logging::addLogSink(make_shared<FileLogSink>(file));
         }
         catch (std::system_error& se)
         {
             LOG_ERR(mlog, "Cannot creadte file log sink: {}", se.what());
             std::exit(1);
         }
-    }
-    else
-    {
-        LOG_DEBUG(mlog, "No file log sink!");
-    }
 
-    if (auto fn = program.present("-j"))
-    {
-        LOG_DEBUG(mlog.getChild("arg_parse"), "JSON Log sink = {}", *fn);
         try
         {
-            Logging::addLogSink(make_shared<JsonLogSink>(*fn));
+            string file = (folder / ("log_" + datetime + ".log")).string();
+            Logging::addLogSink(make_shared<JsonLogSink>(file));
         }
         catch (std::system_error& se)
         {
@@ -178,6 +183,6 @@ void initLogger(argparse::ArgumentParser& program)
     }
     else
     {
-        LOG_DEBUG(mlog, "No file log sink!");
+        LOG_DEBUG(mlog, "No log folder specified!");
     }
 }
