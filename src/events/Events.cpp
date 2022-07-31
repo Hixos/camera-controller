@@ -26,7 +26,7 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-30 15:58:36.807033
+// Autogen date:    2022-07-31 16:35:23.348592
 
 #include "Events.h"
 
@@ -124,6 +124,24 @@ string EventCmdReboot::to_string(int indent) const
 }
 
 nlohmann::json EventCmdReboot::to_json() const { return nlohmann::json(*this); }
+
+EventCmdShutdown::EventCmdShutdown() : Event(id) {}
+
+string EventCmdShutdown::name() const { return "EventCmdShutdown"; }
+
+string EventCmdShutdown::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCmdShutdown::to_json() const
+{
+    return nlohmann::json(*this);
+}
 
 EventCameraCmdConnect::EventCameraCmdConnect() : Event(id) {}
 
@@ -1564,6 +1582,9 @@ EventPtr jsonToEvent(const nlohmann::json& j)
             break;
         case EventCmdReboot::id:
             return make_shared<EventCmdReboot>(j.get<EventCmdReboot>());
+            break;
+        case EventCmdShutdown::id:
+            return make_shared<EventCmdShutdown>(j.get<EventCmdShutdown>());
             break;
         case EventCameraCmdConnect::id:
             return make_shared<EventCameraCmdConnect>(

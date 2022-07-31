@@ -10,6 +10,7 @@ TOPIC_HEARTBEAT
 EventHeartBeat
 EventCmdRestart
 EventCmdReboot
+EventCmdShutdown
 EventCameraCmdConnect
 EventCameraCmdDisconnect
 EventCameraCmdRecoverError

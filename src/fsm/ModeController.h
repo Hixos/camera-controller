@@ -24,6 +24,7 @@
 
 #include <sys/reboot.h>
 #include <unistd.h>
+#include <linux/reboot.h>
 
 #include <memory>
 #include <mutex>
@@ -133,13 +134,21 @@ private:
                 break;
             case EventCmdRestart::id:
                 LOG_INFO(slog, "Restarting!");
-                exit(0);
+
+                // Exit with error to signal that we want to restart
+                exit(1);
                 break;
             case EventCmdReboot::id:
                 LOG_INFO(slog, "Rebooting!");
                 sync();
                 reboot(RB_AUTOBOOT);
-                // exit(0);
+                exit(0);
+                break;
+            case EventCmdShutdown::id:
+                LOG_INFO(slog, "Shutting down!");
+                sync();
+                reboot(LINUX_REBOOT_CMD_POWER_OFF);
+                exit(0);
                 break;
             default:
                 retState = tran_super(&ModeController::Hsm_top);

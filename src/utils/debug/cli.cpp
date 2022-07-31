@@ -375,6 +375,9 @@ void CLI::run()
         {"camera", &CameraCLI::parseCommand},
         {"log", &LogCLI::parseCommand},
         {"mode", &ModeCLI::parseCommand},
+        {"restart", [&](string line){ sBroker.post(EventCmdRestart{}, TOPIC_REMOTE_CMD); return true; }},
+        {"reboot", [&](string line){ sBroker.post(EventCmdReboot{}, TOPIC_REMOTE_CMD); return true; }},
+        {"shutdown", [&](string line){ sBroker.post(EventCmdShutdown{}, TOPIC_REMOTE_CMD); return true; }},
         {"exit", [&](string line){ LOG_INFO(log, "Goodbye!"); exit(0); return true; }}
     };
     // clang-format on
