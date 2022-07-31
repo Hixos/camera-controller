@@ -30,7 +30,7 @@ using std::string;
 struct LogRecord
 {
     int level;
-    int64_t created;
+    double created;
     std::string function;
     std::string file;
     int line;

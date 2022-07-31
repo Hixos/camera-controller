@@ -22,8 +22,8 @@
 
 #include "PrintLogger.h"
 
-#include <fmt/chrono.h>
 #include <fmt/args.h>
+#include <fmt/chrono.h>
 
 #include <chrono>
 
@@ -34,6 +34,7 @@ using std::unique_lock;
 using std::chrono::duration;
 using std::chrono::duration_cast;
 using std::chrono::high_resolution_clock;
+using std::chrono::milliseconds;
 
 string getLevelString(uint8_t level)
 {
@@ -71,8 +72,7 @@ LogRecord PrintLogger::buildLogRecord(uint8_t level, const string& function,
     const auto t = high_resolution_clock::now();
 
     LogRecord record;
-    record.created =
-        duration_cast<duration<int64_t>>(t.time_since_epoch()).count();
+    record.created  = (t.time_since_epoch() / milliseconds(1)) / 1000.0;
     record.level    = level;
     record.function = function;
     record.file     = file;

@@ -40,7 +40,7 @@ public:
 
     ~JsonLogSink()
     {
-        string b = "]";
+        string b = "\n]";
         fwrite(b.c_str(), sizeof(char), b.length(), f);
     }
 
@@ -61,11 +61,12 @@ protected:
 
         if (first)
         {
-            return j.dump() + "\n";
+            first = false;
+            return j.dump();
         }
         else
         {
-            return "," + j.dump() + "\n";
+            return ",\n" + j.dump();
         }
     }
 
