@@ -33,6 +33,14 @@ typedef system_clock Clock;
 namespace gphotow
 {
 
+bool endsWith (std::string const &fullString, std::string const &ending) {
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+
 CameraWrapper::CameraWrapper() : context(gp_context_new()) {}
 
 CameraWrapper::~CameraWrapper() { disconnect(); }
@@ -426,6 +434,9 @@ CameraPath CameraWrapper::bulbCapture(int exposure_time, milliseconds timeout)
     bulb(0);
 
     CameraPath p{};
+
+    bool file_event = false;
+    bool done_event = false;
     do
     {
         auto start     = system_clock::now();
@@ -434,17 +445,22 @@ CameraPath CameraWrapper::bulbCapture(int exposure_time, milliseconds timeout)
         if (ev.first == GP_EVENT_FILE_ADDED && p.name.length() == 0)
         {
             if (ev.second.has_value())
+            {
                 p = ev.second.value();
+
+                if(endsWith(p.name, "JPG"))
+                    file_event = true;
+            }
         }
 
         if (ev.first == GP_EVENT_CAPTURE_COMPLETE)
         {
-            break;
+            done_event = true;
         }
 
         timeout =
             timeout - duration_cast<milliseconds>(system_clock::now() - start);
-    } while (timeout >= milliseconds(0));
+    } while (!(file_event && done_event) && timeout >= milliseconds(0));
 
     if (timeout < milliseconds(0))
     {

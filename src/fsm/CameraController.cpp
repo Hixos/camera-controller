@@ -346,7 +346,7 @@ State CameraController::stateCapturing(const EventPtr& ev)
 
 State CameraController::stateDownloading(const EventPtr& ev)
 {
-    auto slog      = log.getChild("Dwonload");
+    auto slog      = log.getChild("Download");
     State retState = HANDLED;
     switch (ev->getID())
     {
