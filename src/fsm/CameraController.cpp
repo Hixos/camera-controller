@@ -299,6 +299,7 @@ State CameraController::stateCapturing(const EventPtr& ev)
             LOG_STATE(slog, "ENTRY");
             onStateChanged(CCState::CAPTURING);
             postEvent(EventCameraCmdCapture_Internal{});
+            sBroker.post(EventCameraCaptureStarted{}, TOPIC_CAMERA_EVENT);
             break;
         case EventSMInit::id:
             break;

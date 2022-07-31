@@ -26,7 +26,7 @@
  ******************************************************************************
  */
 
-// Autogen date:    2022-07-31 16:35:23.348592
+// Autogen date:    2022-07-31 18:06:30.300318
 
 #include "Events.h"
 
@@ -199,6 +199,27 @@ string EventCameraCmdRecoverError::to_string(int indent) const
 }
 
 nlohmann::json EventCameraCmdRecoverError::to_json() const
+{
+    return nlohmann::json(*this);
+}
+
+EventCameraCaptureStarted::EventCameraCaptureStarted() : Event(id) {}
+
+string EventCameraCaptureStarted::name() const
+{
+    return "EventCameraCaptureStarted";
+}
+
+string EventCameraCaptureStarted::to_string(int indent) const
+{
+    nlohmann::json j = to_json();
+    if (indent < 0)
+        return fmt::format("{} {}", name(), j.dump(indent));
+    else
+        return fmt::format("{}\n{}", name(), j.dump(indent));
+}
+
+nlohmann::json EventCameraCaptureStarted::to_json() const
 {
     return nlohmann::json(*this);
 }
@@ -1597,6 +1618,10 @@ EventPtr jsonToEvent(const nlohmann::json& j)
         case EventCameraCmdRecoverError::id:
             return make_shared<EventCameraCmdRecoverError>(
                 j.get<EventCameraCmdRecoverError>());
+            break;
+        case EventCameraCaptureStarted::id:
+            return make_shared<EventCameraCaptureStarted>(
+                j.get<EventCameraCaptureStarted>());
             break;
         case EventCameraCmdCapture::id:
             return make_shared<EventCameraCmdCapture>(

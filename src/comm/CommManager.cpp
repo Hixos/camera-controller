@@ -43,7 +43,8 @@ CommManager::~CommManager() { sEventBroker.unsubscribe(this); }
 
 void CommManager::doPostEvent(const EventPtr& ev)
 {
-    server.send(ev->to_json());
+    if(server.isConnected())
+        server.send(ev->to_json());
 }
 
 void CommManager::messageHandler(const nlohmann::json& j)

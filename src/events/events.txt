@@ -14,6 +14,7 @@ EventCmdShutdown
 EventCameraCmdConnect
 EventCameraCmdDisconnect
 EventCameraCmdRecoverError
+EventCameraCaptureStarted
 EventCameraCmdCapture
 EventCameraCmdCapture_Internal
 EventCameraCmdDownload
